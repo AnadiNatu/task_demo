@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Task Management System Live Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    /* ======= GLASSY THEME + YOUR CUSTOM CSS ====== */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #330606;
+      color: #fdf4f4;
+      overflow: hidden;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+    .background-wrapper {
+      position: fixed;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      transition: background-image 1s;
+      z-index: 0;
+    }
+    .background-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom right, rgba(128, 0, 0, 0.40), rgba(255, 87, 34, 0.22));
+      z-index: 1;
+    }
+    .content-overlay {
+      position: relative;
+      min-height: 100vh;
+      z-index: 2;
+      background: transparent;
+      /* Prevents pointer events to bg */
+    }
+
+    /* ========== NAVBAR =========== */
+    .glass-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.22);
+      border-radius: 18px;
+      padding: 1rem 2rem;
+      margin-bottom: 1.2rem;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      box-shadow: 0 3px 18px 0 #33060644, 0 1.5px 6px #ff572244;
+    }
+    .nav-left {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 2px;
+    }
+
+    .nav-toggle {
+      display: none; /* Show on mobile */
+      font-size: 2rem;
+      margin-right: 1rem;
+      color: #fff;
+      background: none;
+      border: none;
+    }
+    .nav-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    .nav-right.active {
+      display: flex !important;
+    }
+    .nav-link {
+      color: #ffe5e2;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      transition: color 0.25s, background 0.22s;
+    }
+    .nav-link:hover {
+      color: #ff7043;
+      background: rgba(255,255,255,0.09);
+    }
+    .user-box {
+      display: flex;
+      align-items: center;
+    }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      margin-left: 8px;
+      border: 1px solid #ff704355;
+      box-shadow: 0 2.5px 10px 0 #a3151555;
+      object-fit: cover;
+      cursor: pointer;
+      transform: scale(1);
+      transition: box-shadow 0.3s, transform 0.15s;
+    }
+    .avatar:hover {
+      box-shadow: 0 0 20px 0 #ffccbc80;
+      transform: scale(1.07);
+    }
+
+    /* ===== Profile Card ===== */
+    .profile-card-overlay {
+      position: fixed;
+      inset: 0;
+      backdrop-filter: blur(2px);
+      background: rgba(0,0,0,0.28);
+      z-index: 98;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+    }
+    .profile-card {
+      margin: 90px 40px 0 0;
+      width: 280px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.09);
+      box-shadow: 0 8px 32px rgba(0,0,0,.30);
+      border: 1px solid rgba(255,255,255,0.27);
+      animation: fadeIn .51s ease;
+      z-index: 99;
+      padding: 1.8rem 1.3rem 1.2rem;
+    }
+    .card-profile-image {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      margin-left: calc(50% - 45px);
+      border: 3px solid #ff7043bb;
+      box-shadow: 0 0 8px #fff0;
+    }
+    .profile-details {
+      text-align: center;
+      color: #fff5f5;
+    }
+    .profile-details .username { font-weight: 600; color: #ffb199; }
+    .profile-details .role { font-size: 0.87rem; color: #ffccb3; margin-bottom: 0.6rem; }
+
+    /* ========== DASHBOARD/BOARD ========== */
+    .admin-container {
+      min-height: 100vh;
+      padding: 0 0 30px 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: transparent;
+    }
+    .dashboard-scroll-wrapper, .page-scrollable {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 2;
+      padding: 2rem 6vw 1.6rem 6vw;
+    }
+    @media (max-width: 1000px) {
+      .dashboard-scroll-wrapper, .page-scrollable { padding: 1.35rem 1.5vw; }
+    }
+    .glass-card,
+    .task-card,
+    .kanban-col-card {
+      background: rgba(255,255,255,0.09);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 1.0rem;
+      backdrop-filter: blur(11px);
+      animation: fadeIn 0.65s ease;
+      margin-bottom: 1.2rem;
+    }
+    .glass-card { margin-bottom: 2rem; }
+    .task-card {
+      transition: box-shadow 0.25s, transform 0.22s;
+      cursor: pointer;
+      position: relative;
+      border-left: 6px solid #b71c1c;
+      min-height: 100px;
+      margin-bottom: 1.3rem;
+    }
+    .task-card:hover {
+      box-shadow: 0 0 17px #ff704366;
+      border-left-color: #ff7043;
+      transform: scale(1.035);
+    }
+    .kanban-board {
+      display: flex;
+      gap: 1.45rem;
+      width: 100%;
+      overflow-x: auto;
+      padding: 1.1rem 0 1.7rem 0;
+      margin-bottom: 2rem;
+    }
+    .kanban-column {
+      min-width: 330px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 1.1rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      backdrop-filter: blur(8px);
+      flex: 1 1 auto;
+      max-width: 375px;
+    }
+    .kanban-col-title { color: #df5b28; font-size: 1.21rem; margin-bottom: 1rem; font-weight: 500; }
+
+    /* Progress bar */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 4px;
+      background: #fff2;
+      margin: 12px 0 0;
+      overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg,#fe8c00,#f83600);
+      transition: width 0.31s cubic-bezier(.53,.01,.36,1.49);
+    }
+    .urgency-dot {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #b71c1c;
+      box-shadow: 0 0 13px #ffb199;
+      animation: float 3.3s ease-in-out infinite;
+    }
+    .task-card[data-status="COMPLETE"] .urgency-dot  { background: #384750; box-shadow: none; }
+    .task-card[data-status="IN_PROGRESS"] .urgency-dot  { background: #FF7043; }
+    .task-card[data-status="PENDING"] .urgency-dot  { background: #ffa726; }
+    .task-card[data-status="TRANSFER"] .urgency-dot  { background: #b2bfff; }
+    .task-card[data-status="ASSIGED"] .urgency-dot  { background: #ffd000; }
+
+    /* Button Styles */
+    .glass-button-sm, .glass-button, .themed-button, .btn-themed {
+      background: linear-gradient(135deg, #b73917 60%, #ff7043 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      box-shadow: 0 3px 17px rgba(255,60,34,0.09);
+      transition: box-shadow 0.18s, background 0.21s;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      margin: 0 6px 0 0;
+      backdrop-filter: blur(6px);
+    }
+    .glass-button-sm:active, .glass-button:active, .themed-button:active, .btn-themed:active {
+      color: #fff;
+      background: linear-gradient(135deg, #a31515 90%, #ffb199 100%);
+      box-shadow: 0 8px 32px rgba(255,60,34,0.14);
+    }
+    .glass-button:disabled { opacity: 0.55; pointer-events: none; }
+    .btn-success {
+      background: linear-gradient(to right,#3ba368,#99bf3d 97%);
+      color: #fff;
+      box-shadow: 0 0 9px #a5d64511;
+    }
+    .btn-outline-secondary {
+      background: none;
+      color: #ffe5e5;
+      border: 1.5px solid #b71c1c;
+      border-radius: 8px;
+      padding: 7px 20px;
+      transition: background 0.18s;
+    }
+    .btn-outline-secondary:hover {
+      background: #ff704325;
+      color: #fff;
+    }
+    /* Inputs */
+    .search-input, .themed-input, .form-control, .form-select {
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 9px;
+      width: 100%;
+      background: rgba(255,255,255,0.15);
+      color: #fff !important;
+      outline: none;
+      font-size: 1.02rem;
+      transition: box-shadow 0.17s;
+      margin-bottom: 0.7rem;
+    }
+    .search-input:focus, .form-control:focus, .form-select:focus {
+      box-shadow: 0 0 14px #ff704344;
+      background: rgba(255,255,255,0.23);
+      color: #b71c1c;
+    }
+    /* Floating/animated icons */
+    .floating-icon { animation: float 3.7s ease-in-out infinite; }
+    /* Animations */
+    @keyframes fadeIn { from{opacity:0;transform:translateY(22px);} to {opacity:1; transform:translateY(0);} }
+    @keyframes float { 0%,100% {transform:translateY(0px);} 50%{transform:translateY(-8px);} }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .kanban-board { flex-direction: column; gap: 2rem;}
+      .dashboard-scroll-wrapper, .page-scrollable { padding: 1.5rem 0.5rem; }
+      .glass-navbar { flex-direction: column; align-items: flex-start; padding: 1.1rem 0.5rem; }
+      .kanban-column { max-width: 100%; min-width: unset; }
+      .profile-card { margin-right: 5vw; }
+    }
+    @media (max-width: 600px) {
+      .glass-navbar { flex-direction: column; padding: 1.1rem 0.1rem;}
+      .profile-card { margin-right: 2vw; }
+      .dashboard-scroll-wrapper { padding: 0.2rem; }
+    }
+    /* Hide scrollbars for glass look */
+    ::-webkit-scrollbar { width: 7px; background: rgba(255,255,255,0.04);}
+    ::-webkit-scrollbar-thumb { background: #ff704349; border-radius: 10px;}
+  </style>
+</head>
+<body>
+  <div class="background-wrapper" id="bg"></div>
+  <div class="content-overlay">
+    <!-- NAVBAR -->
+    <nav id="app-navbar" class="glass-navbar" style="display: none">
+      <div class="nav-left"><i class="fas fa-tasks"></i> Task Management Demo</div>
+      <div class="nav-right" id="navLinksContainer">
+        <a class="nav-link" href="#" onclick="routeTo('dashboard')"><i class="fas fa-columns icon-nav"></i>Dashboard</a>
+        <a class="nav-link" href="#" onclick="routeTo('kanban')"><i class="fas fa-table-columns icon-nav"></i>Kanban</a>
+        <a class="nav-link" href="#" onclick="routeTo('create')"><i class="fas fa-plus-circle icon-nav"></i>Create</a>
+        <a class="nav-link" href="#" onclick="routeTo('department')"><i class="fas fa-building icon-nav"></i>Department</a>
+        <a class="nav-link" href="#" onclick="routeTo('history')"><i class="fas fa-history icon-nav"></i>History</a>
+        <span class="user-box">
+          <img id="nav-avatar" src="https://i.pravatar.cc/100?img=11" class="avatar" title="View Profile" onclick="toggleProfileCard()" />
+        </span>
+      </div>
+    </nav>
+    <!-- PROFILE CARD OVERLAY -->
+    <div id="profileOverlay" class="profile-card-overlay" style="display:none" onclick="toggleProfileCard()">
+      <div class="profile-card" onclick="event.stopPropagation()">
+        <img src="https://i.pravatar.cc/100?img=11" class="card-profile-image" />
+        <div class="profile-details">
+          <h3 id="profileName">Admin User</h3>
+          <p><strong>Username:</strong> <span id="profileUsername">adminuser</span></p>
+          <button class="glass-button-sm mt-2" onclick="alert('Simulated logout for demo!');toggleProfileCard();routeTo('login')">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+          <button class="glass-button-sm mt-2" onclick="toggleProfileCard()">
+            <i class="fas fa-times"></i> Close
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- LOGIN PAGE -->
+<div id="loginPage" style="display: flex; justify-content: center; align-items: center; min-height: 96vh;">
+  <div class="glass-card login-card" style="min-width:330px; max-width:410px; padding: 2rem; box-sizing: border-box;">
+    <h2 class="text-center text-light mb-4" style="text-align: center; color: #fff; margin-bottom: 1.5rem;">Admin Task Management Login</h2>
+    
+    <form id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
+      <label class="form-label text-light" style="color: #fff; font-weight: 500;">
+        Username<br>
+        <input id="loginUsername" class="form-control glass-input" required autocomplete="username"
+               value="admin@test.com"
+               style="padding: 0.5rem; margin-top: 0.3rem; border-radius: 0.5rem; width: 100%;" />
+      </label>
+
+      <label class="form-label text-light" style="color: #fff; font-weight: 500;">
+        Password<br>
+        <input id="loginPassword" type="password" class="form-control glass-input" required autocomplete="current-password"
+               value="admin"
+               style="padding: 0.5rem; margin-top: 0.3rem; border-radius: 0.5rem; width: 100%;" />
+      </label>
+
+      <button type="submit" class="glass-button-sm w-100 mt-3" style="width: 100%; padding: 0.6rem; font-weight: bold; border-radius: 0.5rem;">Login</button>
+    </form>
+
+    <hr style="margin-top: 1.5rem; margin-bottom: 0.5rem;">
+    <small style="opacity: 0.72; color: #fff;">Hint: Any credentials accepted, only admin role shown.</small>
+  </div>
+</div>
+    <!-- APP MAIN PAGES -->
+    <div class="admin-container" id="appPages" style="display:none">
+      <!-- DASHBOARD (Default) -->
+      <div class="dashboard-scroll-wrapper page" id="page-dashboard" style="display:block">
+        <!-- Search/Action bar -->
+        <div class="glass-card" style="margin-bottom: 1.6rem;">
+          <div class="d-flex flex-column align-items-center">
+            <h5><i class="fas fa-search floating-icon"></i> Search Tasks</h5>
+            <div class="search-bar">
+              <input id="searchTaskInput" class="search-input" placeholder="🔍 Search by title..." oninput="renderDashboard()"/>
+              <button class="glass-button-sm" onclick="renderDashboard()">Search</button>
+            </div>
+          </div>
+        </div>
+        <!-- Single search result -->
+        <div class="glass-card" id="searchResult" style="display:none"></div>
+        <!-- Main tasks grid -->
+        <div class="glass-card">
+          <h4 class="text-center text-warning"><i class="fas fa-tasks"></i> Tasks Assigned by You</h4>
+          <div id="dashboardTasks" class="dashboard-grid mt-3" style="display:flex;flex-wrap:wrap;gap:1.3rem 2rem"></div>
+          <div id="noTasks" style="display:none;text-align:center; margin-top:1.2rem;">
+            <i class="fas fa-inbox" style="font-size:2.5rem; color:#B2553D"></i>
+            <div class="text-light">No tasks yet. Start by <a onclick="routeTo('create')">creating a new task</a>!</div>
+          </div>
+        </div>
+      </div>
+      <!-- KANBAN BOARD -->
+      <div class="dashboard-scroll-wrapper page" id="page-kanban" style="display:none">
+        <div class="glass-card" style="margin-bottom: 1.8rem;">
+          <h4 class="text-center"><i class="fas fa-table-columns"></i> Kanban Board</h4>
+        </div>
+        <div class="kanban-board" id="kanbanBoard"></div>
+      </div>
+      <!-- CREATE TASK -->
+      <div class="page-scrollable page" id="page-create" style="display:none">
+        <div class="create-task-wrapper mt-5">
+          <h2 class="text-center text-accent mb-4">Create New Task</h2>
+          <div class="glass-card p-4">
+            <form id="createTaskForm">
+              <label class="form-label fw-bold">Task Title<br>
+                <input id="taskTitle" class="form-control" required placeholder="Enter task title" />
+              </label>
+              <label class="form-label fw-bold">Task Description<br>
+                <textarea id="taskDescription" class="form-control" required placeholder="Describe the task" rows="4"></textarea>
+              </label>
+              <label class="form-label fw-bold">Task Status<br>
+                <select id="taskStatus" class="form-select">
+                  <option>PENDING</option>
+                  <option>IN_PROGRESS</option>
+                  <option>COMPLETE</option>
+                  <option>ASSIGED</option>
+                  <option>TRANSFER</option>
+                </select>
+              </label>
+              <label>
+                <input type="checkbox" id="taskIncludeComment" /> Include comment with task
+              </label>
+              <textarea id="taskCommentInput" class="form-control" placeholder="Write your comment here..." rows="2" style="display:none"></textarea>
+              <button type="submit" class="glass-button w-100 mb-2">Create Task</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- ASSIGN TASK (Simulated) -->
+      <div class="page page-scrollable" id="page-assign" style="display:none"></div>
+      <!-- UPDATE STATUS (Simulated) -->
+      <div class="page page-scrollable" id="page-update-status" style="display:none"></div>
+      <!-- ADD COMMENT -->
+      <div class="page page-scrollable" id="page-comment" style="display:none"></div>
+      <!-- DEPARTMENT VIEW -->
+      <div class="page page-scrollable" id="page-department" style="display:none">
+        <div class="glass-card" style="margin-bottom: 1.3rem;">
+          <div class="sticky-header d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold m-0">Search Tasks by Department</h4>
+            <button class="btn btn-themed" onclick="routeTo('dashboard')">&larr; Back</button>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="input-group mb-2" style="display:flex;align-items:center;gap:0.85rem">
+            <input id="deptInput" class="form-control themed-input" placeholder="Enter Department"/>
+            <button class="btn btn-themed" onclick="renderDepartment()">Search</button>
+          </div>
+          <div id="deptError" class="alert alert-danger themed-alert" style="display:none"></div>
+          <div class="row mt-3" id="deptTasks"></div>
+          <div id="deptNoResults" class="text-muted mt-4" style="margin-left:6px"></div>
+        </div>
+      </div>
+      <!-- HISTORY (Previously Assigned) -->
+      <div class="page page-scrollable" id="page-history" style="display:none">
+        <div class="glass-card" style="margin-bottom: 1.3rem;">
+          <div class="sticky-header d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold m-0">Previously Assigned Tasks</h4>
+            <button class="btn btn-themed" onclick="routeTo('dashboard')">&larr; Back to Dashboard</button>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="row" id="historyTasks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // ========= DEMO DATA =========
+    let DUMMY_USERS = [
+      {id:1, name:'Alice Johnson', username:'alice', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=14'},
+      {id:2, name:'Bob Smith', username:'bob', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=12'},
+      {id:3, name:'Carla D.', username:'carla', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=22'},
+      {id:101, name:'Admin User', username:'adminuser', userRoles:'ADMIN', avatar:'https://i.pravatar.cc/100?img=11'}
+    ];
+    let DUMMY_TASKS = [
+      {
+        taskId: 101, taskTitle: 'Design Landing Page', taskDescription: 'Modern responsive homepage.', assignedToId:1, assignedToName:'Alice Johnson', assignedFromId:101, assignedFromName:'Admin User',
+        previouslyAssignedToId:2, previouslyAssignedToName:'Bob Smith', taskStatus:'IN_PROGRESS', taskCreatedOn:new Date(Date.now()-6*86400000), assignedOn:new Date(Date.now()-3*86400000), completedAt:null, department:'Design', comments:[], progress:45
+      },
+      {
+        taskId: 102, taskTitle: 'API Integration', taskDescription: 'Integrate the payment API.', assignedToId:2, assignedToName:'Bob Smith', assignedFromId:101, assignedFromName:'Admin User',
+        previouslyAssignedToId:1, previouslyAssignedToName:'Alice Johnson', taskStatus:'PENDING', taskCreatedOn:new Date(Date.now()-10*86400000), assignedOn:new Date(Date.now()-2*86400000), completedAt:null, department:'Backend', comments:[], progress:8
+      },
+      {
+        taskId: 103, taskTitle: 'User Feedback System', taskDescription: 'Deploy feedback widget on dashboard.', assignedToId:3, assignedToName:'Carla D.', assignedFromId:101, assignedFromName:'Admin User',
+        previouslyAssignedToId:1, previouslyAssignedToName:'Alice Johnson', taskStatus:'COMPLETE', taskCreatedOn:new Date(Date.now()-17*86400000), assignedOn:new Date(Date.now()-13*86400000), completedAt:new Date(Date.now()-1*86400000), department:'QA', comments:[], progress:100
+      },
+      {
+        taskId: 104, taskTitle: 'Marketing Blurb', taskDescription:'Prepare new product blurb.', assignedToId:1, assignedToName:'Alice Johnson', assignedFromId:101, assignedFromName:'Admin User',
+        previouslyAssignedToId:3, previouslyAssignedToName:'Carla D.', taskStatus:'ASSIGED', taskCreatedOn:new Date(Date.now()-5*86400000), assignedOn:new Date(Date.now()-4*86400000), completedAt:null, department:'Marketing', comments:[], progress:12
+      },
+      {
+        taskId: 105, taskTitle: 'Server Maintenance', taskDescription: 'Upgrade OS patches.', assignedToId:2, assignedToName:'Bob Smith', assignedFromId:101, assignedFromName:'Admin User',
+        previouslyAssignedToId:3, previouslyAssignedToName:'Carla D.', taskStatus:'TRANSFER', taskCreatedOn:new Date(Date.now()-4*86400000), assignedOn:new Date(Date.now()-4*86400000), completedAt:null, department:'DevOps', comments:[], progress:23
+      }
+    ];
+    let DEPARTMENT_LIST = ['Design','Backend','QA','DevOps','Marketing'];
+
+    // ======= ROUTING AND STATE MGMT =======
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(pg => pg.style.display='none');
+      let p = document.getElementById('page-'+pageId);
+      if (p) p.style.display='block';
+      if (pageId!=="login") {
+        document.getElementById('app-navbar').style.display = '';
+        document.getElementById('appPages').style.display = '';
+        document.getElementById('loginPage').style.display = 'none';
+      } else {
+        document.getElementById('app-navbar').style.display='none';
+        document.getElementById('loginPage').style.display='';
+        document.getElementById('appPages').style.display='none';
+      }
+    }
+    function routeTo(page) {
+      showPage(page);
+      if(page==='dashboard') renderDashboard();
+      if(page==='kanban') renderKanban();
+      if(page==='department') renderDepartment();
+      if(page==='history') renderHistory();
+      if(page==='create') setTimeout(()=>{document.getElementById('taskTitle').focus();},250);
+    }
+    // Profile card
+    function toggleProfileCard() {
+      let el = document.getElementById('profileOverlay');
+      el.style.display = el.style.display==='none'?'flex':'none';
+    }
+    // ====== LOGIN =====
+    document.getElementById('loginForm').onsubmit = function(e){
+      e.preventDefault();
+      showPage('dashboard');
+      renderDashboard();
+      document.getElementById('app-navbar').style.display = '';
+      document.getElementById('appPages').style.display = '';
+      document.getElementById('loginPage').style.display = 'none';
+      // Demo: set username
+      document.getElementById('profileName').innerText = 'Admin User';
+      document.getElementById('profileUsername').innerText = 'adminuser';
+    };
+
+    // ===== DASHBOARD LOGIC =====
+    function renderDashboard() {
+      // Render search and result
+      let searchVal = (document.getElementById('searchTaskInput')?.value || '').toLowerCase();
+      let board = document.getElementById('dashboardTasks');
+      board.innerHTML = '';
+      document.getElementById('noTasks').style.display = 'none';
+      let tasks = DUMMY_TASKS.filter(t => t.assignedFromName === 'Admin User');
+      if(searchVal) tasks = tasks.filter(t => t.taskTitle.toLowerCase().includes(searchVal));
+      if(tasks.length === 0){
+        document.getElementById('noTasks').style.display = '';
+      } else {
+        tasks.forEach(task => board.appendChild(renderTaskCard(task, true)));
+      }
+      // Show single search result card
+      let sr = document.getElementById('searchResult');
+      if(searchVal && tasks.length>0) {
+        sr.style.display = '';
+        sr.innerHTML='';
+        sr.appendChild(renderTaskCard(tasks[0], false, true));
+      } else { sr.style.display='none'; }
+    }
+    // Task card for dashboard
+    function renderTaskCard(task, showActions=true, isResult=false) {
+      let c = document.createElement('div');
+      c.className = 'task-card';
+      c.setAttribute('data-status', task.taskStatus);
+      c.innerHTML = `
+        <div class="urgency-dot"></div>
+        <div class="task-header"><h5 style="margin:2px 0 0">${task.taskTitle}</h5></div>
+        <div>${task.taskDescription}</div>
+        <div style="font-size:.97rem; margin:3px 0 2px">
+          <strong>Status:</strong> ${task.taskStatus.charAt(0)+task.taskStatus.slice(1).toLowerCase()}<br>
+          <strong>Assigned To:</strong> ${task.assignedToName}
+        </div>
+        <div><strong>Created:</strong> ${task.taskCreatedOn.toLocaleDateString()}</div>
+        <div class="progress-bar" title="Task Progress">
+          <div class="progress-bar-inner" style="width:${task.progress||Math.floor(Math.random()*45+17)}%"></div>
+        </div>
+      `;
+      if(showActions) {
+        let bar = document.createElement('div');
+        bar.className = "d-flex flex-wrap gap-2 mt-2";
+        // Assign
+        let btn1=document.createElement('button');
+        btn1.className='glass-button-sm';
+        btn1.innerHTML='<i class="fas fa-user-plus"></i> Assign';
+        btn1.onclick=()=>showAssignTask(task);
+        bar.appendChild(btn1);
+        // Update
+        let btn2=document.createElement('button');
+        btn2.className='glass-button-sm';
+        btn2.innerHTML='<i class="fas fa-edit"></i> Update';
+        btn2.onclick=()=>showUpdateStatus(task);
+        bar.appendChild(btn2);
+        // Comment
+        let btn3=document.createElement('button');
+        btn3.className='glass-button-sm';
+        btn3.innerHTML='<i class="fas fa-comment-dots"></i> Comment';
+        btn3.onclick=()=>showAddComment(task);
+        bar.appendChild(btn3);
+        c.appendChild(bar);
+      }
+      return c;
+    }
+
+    // ===== KANBAN ======
+    function renderKanban(){
+      let colStatus = [
+        {status:'PENDING', label:'Pending', color:'#ffa726'},
+        {status:'IN_PROGRESS', label:'In Progress', color:'#FF7043'},
+        {status:'ASSIGED', label:'Assigned', color:'#ffd000'},
+        {status:'TRANSFER', label:'Transfer', color:'#b2bfff'},
+        {status:'COMPLETE', label:'Completed', color:'#384750'}
+      ];
+      let kanban = document.getElementById('kanbanBoard');
+      kanban.innerHTML='';
+      colStatus.forEach(col=>{
+        let ks = document.createElement('div');
+        ks.className = 'kanban-column';
+        ks.innerHTML = `<div class="kanban-col-title" style="color:${col.color}">${col.label}</div>`;
+        let matches = DUMMY_TASKS.filter(t => t.taskStatus===col.status);
+        if(matches.length===0) ks.innerHTML += "<div class='text-muted'><i>No tasks</i></div>";
+        matches.forEach(task=>{
+          let card = renderTaskCard(task, true, false);
+          card.style.marginBottom='1.1rem';
+          // avatar + quick progress
+          let user = DUMMY_USERS.find(u=>u.id===task.assignedToId);
+          card.innerHTML=
+           `<div style="display:flex;align-items:center;gap:8px">
+             <img src="${user?.avatar||'https://i.pravatar.cc/100?img=14'}" style="width:33px;height:33px;border-radius:50%">
+             <strong>${task.assignedToName}</strong>
+            </div>` + card.innerHTML;
+          ks.appendChild(card);
+        });
+        kanban.appendChild(ks);
+      });
+    }
+
+    // ====== CREATE TASK =======
+    document.getElementById('taskIncludeComment').onchange = function(){
+      document.getElementById('taskCommentInput').style.display = this.checked? '':'none';
+    }
+    document.getElementById('createTaskForm').onsubmit = function(ev){
+      ev.preventDefault();
+      let newTask = {
+        taskId:Math.floor(Math.random()*90000+200),
+        taskTitle:document.getElementById('taskTitle').value,
+        taskDescription:document.getElementById('taskDescription').value,
+        assignedToId:2,
+        assignedToName:'Bob Smith',
+        assignedFromId:101,
+        assignedFromName:'Admin User',
+        previouslyAssignedToId:3,
+        previouslyAssignedToName:'Carla D.',
+        taskStatus:document.getElementById('taskStatus').value || 'PENDING',
+        taskCreatedOn:new Date(),
+        assignedOn:new Date(),
+        completedAt:null,
+        department:'Auto',
+        comments:[],
+        progress:(document.getElementById('taskStatus').value==='COMPLETE')?100:0
+      };
+      if(document.getElementById('taskIncludeComment').checked && document.getElementById('taskCommentInput').value.trim()) {
+        newTask.comments.push({by:'Admin User',role:'CREATOR',content:document.getElementById('taskCommentInput').value});
+      }
+      DUMMY_TASKS.push(newTask);
+      alert('Task created! (Demo)');
+      routeTo('dashboard');
+    }
+    // ===== ASSIGN TASK =====
+    function showAssignTask(task){
+      showPage('assign');
+      let pg = document.getElementById('page-assign');
+      pg.innerHTML = '';
+      let card = document.createElement('div');
+      card.className='glass-card mx-auto mt-5';
+      card.style.maxWidth='640px';
+      card.innerHTML=`
+        <div class="sticky-header">
+          <h3 class="text-center" style="color:var(--pastel-blue);margin-bottom:12px">Assign Task: <span style="color:#ff9d7a">${task.taskTitle}</span></h3>
+        </div>
+        <div class="scrollable-section">
+          <div class="mb-3"><b>Title:</b> ${task.taskTitle}</div>
+          <div class="mb-3"><b>Description:</b> ${task.taskDescription}</div>
+          <form id="assignForm">
+            <label class="form-label">Assign To<br>
+              <select class="form-select" id="assignTo" required>
+                <option value="">Select an employee</option>
+                ${DUMMY_USERS.filter(u=>u.userRoles==='EMPLOYEE').map(emp=>`<option value="${emp.username}">${emp.name} (${emp.username})</option>`).join('')}
+              </select>
+            </label>
+            <label class="form-label">Comment (optional)<br>
+              <textarea class="form-control" id="assignComment" rows="3" placeholder="Write a comment"></textarea>
+            </label>
+            <button type="submit" class="themed-button w-100 mt-2">Assign Task</button>
+          </form>
+          <div class="text-center mt-3">
+            <button class="glass-button-sm" onclick="routeTo('dashboard')">Back to Dashboard</button>
+          </div>
+        </div>
+      `;
+      pg.appendChild(card);
+      document.getElementById('assignForm').onsubmit = function(e){
+        e.preventDefault();
+        let user = DUMMY_USERS.filter(u=>u.userRoles==='EMPLOYEE').find(u=>u.username===document.getElementById('assignTo').value);
+        if(user){
+          task.assignedToId = user.id; task.assignedToName=user.name;
+          task.comments = task.comments || [];
+          if(document.getElementById('assignComment').value.trim())
+            task.comments.push({by:'Admin User',role:'CREATOR',content:document.getElementById('assignComment').value});
+          alert(`Task "${task.taskTitle}" assigned to ${user.name} (demo)`);
+          routeTo('dashboard');
+        } else alert('Must select an employee');
+      }
+    }
+    // ===== UPDATE STATUS =====
+    function showUpdateStatus(task) {
+      showPage('update-status');
+      let pg = document.getElementById('page-update-status');
+      pg.innerHTML = '';
+      let card = document.createElement('div');
+      card.className='glass-card mx-auto mt-5';
+      card.style.maxWidth='640px';
+      card.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 style="margin-bottom:.6rem">Update Task Status</h3>
+          <button class="btn btn-outline-secondary" onclick="routeTo('dashboard')">&larr; Back</button>
+        </div>
+        <h5 class="mb-2">Task Title: ${task.taskTitle}</h5>
+        <p class="mb-3">Description: ${task.taskDescription}</p>
+        <form id="updateForm">
+          <label for="status" class="form-label">Select New Status<br>
+            <select class="form-select" id="updateStatusInput" required>
+              <option value="PENDING" ${task.taskStatus==='PENDING'?'selected':''}>PENDING</option>
+              <option value="IN_PROGRESS" ${task.taskStatus==='IN_PROGRESS'?'selected':''}>IN_PROGRESS</option>
+              <option value="ASSIGED" ${task.taskStatus==='ASSIGED'?'selected':''}>ASSIGED</option>
+              <option value="TRANSFER" ${task.taskStatus==='TRANSFER'?'selected':''}>TRANSFER</option>
+              <option value="COMPLETE" ${task.taskStatus==='COMPLETE'?'selected':''}>COMPLETE</option>
+            </select>
+          </label>
+          <button type="submit" class="btn btn-success w-100">Update Status</button>
+        </form>
+      `;
+      pg.appendChild(card);
+      document.getElementById('updateForm').onsubmit = function(ev){
+        ev.preventDefault();
+        let s = document.getElementById('updateStatusInput').value;
+        task.taskStatus = s;
+        task.progress = (s==='COMPLETE')?100: task.progress || Math.random()*60+15;
+        alert('Task status updated! (Demo)');
+        routeTo('dashboard');
+      }
+    }
+
+    // ===== ADD COMMENT =====
+    function showAddComment(task){
+      showPage('comment');
+      let pg = document.getElementById('page-comment');
+      pg.innerHTML = '';
+      let card = document.createElement('div');
+      card.className='glass-card mx-auto mt-5';
+      card.style.maxWidth='600px';
+      card.innerHTML = `
+        <div class="sticky-header"><h3 class="text-center" style="color:var(--pastel-blue);margin-bottom:12px">Add Comment to Task</h3></div>
+        <div class="scrollable-section">
+          <label class="form-label fw-bold">Task Title<br>
+            <input type="text" class="form-control" value="${task.taskTitle}" disabled/>
+          </label>
+          <label class="form-label fw-bold">Comment<br>
+            <textarea id="commentInputBox" class="form-control" rows="4" placeholder="Write your comment here..." required></textarea>
+          </label>
+          <div class="d-flex justify-content-between mt-4">
+            <button class="themed-button" onclick="routeTo('dashboard')">Back</button>
+            <button class="themed-button" onclick="submitDemoComment(${task.taskId})">Submit</button>
+          </div>
+        </div>
+      `;
+      pg.appendChild(card);
+    }
+    function submitDemoComment(taskId) {
+      let t = DUMMY_TASKS.find(tsk=>tsk.taskId===taskId);
+      let val = document.getElementById('commentInputBox').value;
+      if(val && t){
+        t.comments = t.comments||[];
+        t.comments.push({by:'Admin User',role:'CREATOR',content:val});
+        alert('Comment added (demo)');
+        routeTo('dashboard');
+      }
+    }
+
+    // ===== DEPARTMENT =====
+    function renderDepartment(){
+      let d = (document.getElementById('deptInput').value||'').trim();
+      let holder = document.getElementById('deptTasks'), error = document.getElementById('deptError'), nores=document.getElementById('deptNoResults');
+      holder.innerHTML=''; error.style.display='none'; nores.innerHTML='';
+      if(!d) {
+        error.innerHTML = 'Department is required'; error.style.display='';
+        return;
+      }
+      let matches = DUMMY_TASKS.filter(t => t.department && t.department.toLowerCase().includes(d.toLowerCase()));
+      if(matches.length===0) {
+        nores.innerHTML='No tasks found. Enter another department and click Search.';
+      } else {
+        matches.forEach(task=>{
+          let card = document.createElement('div');
+          card.className = 'glass-card h-100';
+          card.style.marginBottom='1.3rem';
+          card.innerHTML = `
+            <h5 class="text-primary">${task.taskTitle}</h5>
+            <div>${task.taskDescription}</div>
+            <div><b>Status:</b> ${task.taskStatus}</div>
+            <div><b>Assigned On:</b> ${task.assignedOn.toLocaleDateString()}</div>
+            <div><b>Completed At:</b> ${task.completedAt? task.completedAt.toLocaleDateString():'—'}</div>
+            <div class="progress-bar">
+              <div class="progress-bar-inner" style="width:${task.progress||30}%"></div>
+            </div>
+          `;
+          holder.appendChild(card);
+        });
+      }
+    }
+
+    // ===== HISTORY =====
+    function renderHistory(){
+      let holder = document.getElementById('historyTasks');
+      holder.innerHTML='';
+      let matches = DUMMY_TASKS.filter(t=>t.previouslyAssignedToName && t.previouslyAssignedToName!=='');
+      if(matches.length===0){
+        let d = document.createElement('div');
+        d.className = 'alert alert-warning text-center mt-4';
+        d.innerText = "No previously assigned tasks found.";
+        holder.appendChild(d);
+      } else {
+        matches.forEach(task=>{
+          let card = document.createElement('div');
+          card.className='glass-card h-100';
+          card.style.marginBottom='1.2rem';
+          card.innerHTML=`
+            <h5 class="fw-semibold text-primary">${task.taskTitle}</h5>
+            <div>${task.taskDescription}</div>
+            <div><b>Status:</b> ${task.taskStatus}</div>
+            <div><b>Assigned From:</b> ${task.assignedFromName}</div>
+            <div><b>Assigned On:</b> ${task.assignedOn.toLocaleDateString()}</div>
+            <div><b>Created On:</b> ${task.taskCreatedOn.toLocaleDateString()}</div>
+          `;
+          holder.appendChild(card);
+        });
+      }
+    }
+
+    // ===== BACKGROUND ROTATION EFFECT =====
+    let demoBgImgs = [
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80'
+    ];
+    let demoBgIndex = 0;
+    setInterval(() => {
+      demoBgIndex=(demoBgIndex+1)%demoBgImgs.length;
+      document.getElementById('bg').style.backgroundImage="url('"+demoBgImgs[demoBgIndex]+"')";
+    }, 4500);
+
+    // Enable dashboard on load for demo
+    // showPage('dashboard'); // start at login
+  </script>
+</body>
+</html>
