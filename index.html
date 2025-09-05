@@ -2,926 +2,2199 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Task Management System Live Demo</title>
+  <title>Enhanced Task Management System - Live Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <style>
-    /* ======= GLASSY THEME + YOUR CUSTOM CSS ====== */
-    html, body {
+    /* ======= ENHANCED GLASSY THEME ====== */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
       height: 100%;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #330606;
-      color: #fdf4f4;
-      overflow: hidden;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow-x: hidden;
     }
-    body {
-      min-height: 100vh;
-      min-width: 100vw;
-    }
+    
+    /* Enhanced background with multiple images rotation */
     .background-wrapper {
       position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: background-image 1s ease-in-out;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
     }
+    
+    .background-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.4) 0%, rgba(42, 39, 218, 0.3) 35%, rgba(20, 20, 20, 0.5) 100%);
+      z-index: 1;
+    }
+    
     .background-wrapper::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom right, rgba(128, 0, 0, 0.40), rgba(255, 87, 34, 0.22));
-      z-index: 1;
+      background: radial-gradient(circle at 30% 70%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 30%, rgba(255, 119, 198, 0.1) 0%, transparent 50%);
+      animation: pulse 4s ease-in-out infinite alternate;
+      z-index: 2;
     }
+    
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.7; }
+    }
+    
     .content-overlay {
       position: relative;
       min-height: 100vh;
-      z-index: 2;
-      background: transparent;
-      /* Prevents pointer events to bg */
+      z-index: 3;
+      backdrop-filter: blur(1px);
     }
 
-    /* ========== NAVBAR =========== */
+    /* ========== ENHANCED NAVBAR =========== */
     .glass-navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0,0,0,0.22);
-      border-radius: 18px;
-      padding: 1rem 2rem;
-      margin-bottom: 1.2rem;
-      backdrop-filter: blur(8px);
-      z-index: 10;
-      flex-wrap: wrap;
+      background: rgba(15, 15, 35, 0.4);
+      border-radius: 24px;
+      padding: 1.2rem 2.5rem;
+      margin: 1.5rem 2rem 2rem 2rem;
+      backdrop-filter: blur(20px) saturate(1.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
       position: sticky;
-      top: 0;
-      box-shadow: 0 3px 18px 0 #33060644, 0 1.5px 6px #ff572244;
+      top: 1rem;
+      z-index: 100;
     }
+    
     .nav-left {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #fff;
-      letter-spacing: 2px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .nav-toggle {
-      display: none; /* Show on mobile */
-      font-size: 2rem;
-      margin-right: 1rem;
-      color: #fff;
-      background: none;
-      border: none;
-    }
     .nav-right {
       display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1.5rem;
       align-items: center;
+      flex-wrap: wrap;
     }
-    .nav-right.active {
-      display: flex !important;
-    }
+    
     .nav-link {
-      color: #ffe5e2;
+      color: rgba(255, 255, 255, 0.9);
       text-decoration: none;
       font-weight: 500;
-      padding: 0.4rem 0.9rem;
-      border-radius: 8px;
-      transition: color 0.25s, background 0.22s;
+      padding: 0.7rem 1.2rem;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
     }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+    
     .nav-link:hover {
-      color: #ff7043;
-      background: rgba(255,255,255,0.09);
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
     }
-    .user-box {
-      display: flex;
-      align-items: center;
+    
+    .nav-link:hover::before {
+      left: 100%;
     }
+    
     .avatar {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      margin-left: 8px;
-      border: 1px solid #ff704355;
-      box-shadow: 0 2.5px 10px 0 #a3151555;
+      margin-left: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       object-fit: cover;
       cursor: pointer;
-      transform: scale(1);
-      transition: box-shadow 0.3s, transform 0.15s;
+      transition: all 0.3s ease;
     }
+    
     .avatar:hover {
-      box-shadow: 0 0 20px 0 #ffccbc80;
-      transform: scale(1.07);
+      box-shadow: 0 8px 25px rgba(100, 150, 255, 0.4);
+      transform: scale(1.1);
+      border-color: rgba(100, 150, 255, 0.6);
     }
 
-    /* ===== Profile Card ===== */
+    /* ===== Enhanced Profile Card ===== */
     .profile-card-overlay {
       position: fixed;
       inset: 0;
-      backdrop-filter: blur(2px);
-      background: rgba(0,0,0,0.28);
-      z-index: 98;
+      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 200;
       display: flex;
       align-items: flex-start;
       justify-content: flex-end;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
     }
+    
+    .profile-card-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
     .profile-card {
-      margin: 90px 40px 0 0;
-      width: 280px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.09);
-      box-shadow: 0 8px 32px rgba(0,0,0,.30);
-      border: 1px solid rgba(255,255,255,0.27);
-      animation: fadeIn .51s ease;
-      z-index: 99;
-      padding: 1.8rem 1.3rem 1.2rem;
+      margin: 100px 50px 0 0;
+      width: 320px;
+      border-radius: 24px;
+      background: rgba(20, 20, 40, 0.9);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2.5rem 2rem;
+      transform: translateY(-50px);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+    
+    .profile-card-overlay.active .profile-card {
+      transform: translateY(0);
+    }
+    
     .card-profile-image {
-      width: 90px;
-      height: 90px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      margin-bottom: 1rem;
-      margin-left: calc(50% - 45px);
-      border: 3px solid #ff7043bb;
-      box-shadow: 0 0 8px #fff0;
+      margin: 0 auto 1.5rem;
+      display: block;
+      border: 3px solid rgba(100, 150, 255, 0.5);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
-    .profile-details {
-      text-align: center;
-      color: #fff5f5;
-    }
-    .profile-details .username { font-weight: 600; color: #ffb199; }
-    .profile-details .role { font-size: 0.87rem; color: #ffccb3; margin-bottom: 0.6rem; }
 
-    /* ========== DASHBOARD/BOARD ========== */
-    .admin-container {
-      min-height: 100vh;
-      padding: 0 0 30px 0;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      background: transparent;
-    }
-    .dashboard-scroll-wrapper, .page-scrollable {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      z-index: 2;
-      padding: 2rem 6vw 1.6rem 6vw;
-    }
-    @media (max-width: 1000px) {
-      .dashboard-scroll-wrapper, .page-scrollable { padding: 1.35rem 1.5vw; }
-    }
+    /* ========== ENHANCED CARDS ========== */
     .glass-card,
     .task-card,
     .kanban-col-card {
-      background: rgba(255,255,255,0.09);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-      border: 1px solid rgba(255,255,255,0.18);
-      padding: 1.0rem;
-      backdrop-filter: blur(11px);
-      animation: fadeIn 0.65s ease;
-      margin-bottom: 1.2rem;
-    }
-    .glass-card { margin-bottom: 2rem; }
-    .task-card {
-      transition: box-shadow 0.25s, transform 0.22s;
-      cursor: pointer;
-      position: relative;
-      border-left: 6px solid #b71c1c;
-      min-height: 100px;
-      margin-bottom: 1.3rem;
-    }
-    .task-card:hover {
-      box-shadow: 0 0 17px #ff704366;
-      border-left-color: #ff7043;
-      transform: scale(1.035);
-    }
-    .kanban-board {
-      display: flex;
-      gap: 1.45rem;
-      width: 100%;
-      overflow-x: auto;
-      padding: 1.1rem 0 1.7rem 0;
+      background: rgba(25, 25, 50, 0.4);
+      border-radius: 20px;
+      backdrop-filter: blur(15px) saturate(1.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      padding: 2rem;
       margin-bottom: 2rem;
-    }
-    .kanban-column {
-      min-width: 330px;
-      background: rgba(255,255,255,0.09);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.18);
-      padding: 1.1rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
-      backdrop-filter: blur(8px);
-      flex: 1 1 auto;
-      max-width: 375px;
-    }
-    .kanban-col-title { color: #df5b28; font-size: 1.21rem; margin-bottom: 1rem; font-weight: 500; }
-
-    /* Progress bar */
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      border-radius: 4px;
-      background: #fff2;
-      margin: 12px 0 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
       overflow: hidden;
     }
+    
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+    
+    .task-card {
+      cursor: pointer;
+      border-left: 5px solid transparent;
+      min-height: 120px;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+    }
+    
+    .task-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Task status colors */
+    .task-card[data-status="PENDING"] { border-left-color: #ffa726; }
+    .task-card[data-status="IN_PROGRESS"] { border-left-color: #42a5f5; }
+    .task-card[data-status="ASSIGNED"] { border-left-color: #66bb6a; }
+    .task-card[data-status="TRANSFER"] { border-left-color: #ab47bc; }
+    .task-card[data-status="COMPLETE"] { border-left-color: #4caf50; }
+
+    /* ========== ENHANCED CONTAINERS ========== */
+    .admin-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .dashboard-scroll-wrapper, 
+    .page-scrollable {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 4rem 3rem 4rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+    
+    .dashboard-scroll-wrapper::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .dashboard-scroll-wrapper::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    .dashboard-scroll-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    /* ========== KANBAN BOARD ========== */
+    .kanban-board {
+      display: flex;
+      gap: 2rem;
+      overflow-x: auto;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .kanban-column {
+      min-width: 350px;
+      background: rgba(30, 30, 60, 0.4);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 1.5rem;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+    
+    .kanban-col-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+    }
+
+    /* ========== ENHANCED FORM ELEMENTS ========== */
+    .form-control, 
+    .form-select, 
+    .search-input, 
+    .themed-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      color: #ffffff;
+      font-size: 1rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    .form-control::placeholder,
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .form-control:focus,
+    .form-select:focus,
+    .search-input:focus {
+      outline: none;
+      border-color: rgba(100, 150, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 20px rgba(100, 150, 255, 0.3);
+    }
+
+    /* ========== ENHANCED BUTTONS ========== */
+    .glass-button,
+    .glass-button-sm,
+    .themed-button,
+    .btn-themed {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .glass-button-sm {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+    
+    .glass-button::before,
+    .glass-button-sm::before,
+    .themed-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .glass-button:hover,
+    .glass-button-sm:hover,
+    .themed-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .glass-button:hover::before,
+    .glass-button-sm:hover::before,
+    .themed-button:hover::before {
+      left: 100%;
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    }
+    
+    .btn-outline-secondary {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-outline-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ========== PROGRESS BAR ========== */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      margin: 1rem 0;
+      overflow: hidden;
+      position: relative;
+    }
+    
     .progress-bar-inner {
       height: 100%;
-      border-radius: 4px;
-      background: linear-gradient(90deg,#fe8c00,#f83600);
-      transition: width 0.31s cubic-bezier(.53,.01,.36,1.49);
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
     }
+    
+    .progress-bar-inner::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ========== STATUS INDICATORS ========== */
     .urgency-dot {
       position: absolute;
-      top: 12px;
-      right: 18px;
-      width: 13px;
-      height: 13px;
+      top: 1rem;
+      right: 1rem;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      background: #b71c1c;
-      box-shadow: 0 0 13px #ffb199;
-      animation: float 3.3s ease-in-out infinite;
+      animation: pulse-dot 2s ease-in-out infinite;
     }
-    .task-card[data-status="COMPLETE"] .urgency-dot  { background: #384750; box-shadow: none; }
-    .task-card[data-status="IN_PROGRESS"] .urgency-dot  { background: #FF7043; }
-    .task-card[data-status="PENDING"] .urgency-dot  { background: #ffa726; }
-    .task-card[data-status="TRANSFER"] .urgency-dot  { background: #b2bfff; }
-    .task-card[data-status="ASSIGED"] .urgency-dot  { background: #ffd000; }
+    
+    @keyframes pulse-dot {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      50% { 
+        transform: scale(1.2);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+      }
+    }
 
-    /* Button Styles */
-    .glass-button-sm, .glass-button, .themed-button, .btn-themed {
-      background: linear-gradient(135deg, #b73917 60%, #ff7043 100%);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 8px 16px;
-      box-shadow: 0 3px 17px rgba(255,60,34,0.09);
-      transition: box-shadow 0.18s, background 0.21s;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      outline: none;
-      margin: 0 6px 0 0;
-      backdrop-filter: blur(6px);
+    /* ========== LOGIN PAGE ========== */
+    .login-card {
+      background: rgba(25, 25, 50, 0.8);
+      backdrop-filter: blur(20px);
+      max-width: 450px;
+      margin: 0 auto;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .glass-button-sm:active, .glass-button:active, .themed-button:active, .btn-themed:active {
-      color: #fff;
-      background: linear-gradient(135deg, #a31515 90%, #ffb199 100%);
-      box-shadow: 0 8px 32px rgba(255,60,34,0.14);
-    }
-    .glass-button:disabled { opacity: 0.55; pointer-events: none; }
-    .btn-success {
-      background: linear-gradient(to right,#3ba368,#99bf3d 97%);
-      color: #fff;
-      box-shadow: 0 0 9px #a5d64511;
-      padding: 0px;
-    }
-    .btn-outline-secondary {
-      background: none;
-      color: #ffe5e5;
-      border: 1.5px solid #b71c1c;
-      border-radius: 8px;
-      padding: 7px 20px;
-      transition: background 0.18s;
-    }
-    .btn-outline-secondary:hover {
-      background: #ff704325;
-      color: #fff;
-    }
-    /* Inputs */
-    .search-input, .themed-input, .form-control, .form-select {
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 9px;
-      width: 100%;
-      background: rgba(255,255,255,0.15);
-      color: #fff !important;
-      outline: none;
-      font-size: 1.02rem;
-      transition: box-shadow 0.17s;
-      margin-bottom: 0.7rem;
-    }
-    .search-input:focus, .form-control:focus, .form-select:focus {
-      box-shadow: 0 0 14px #ff704344;
-      background: rgba(255,255,255,0.23);
-      color: #b71c1c;
-    }
-    /* Floating/animated icons */
-    .floating-icon { animation: float 3.7s ease-in-out infinite; }
-    /* Animations */
-    @keyframes fadeIn { from{opacity:0;transform:translateY(22px);} to {opacity:1; transform:translateY(0);} }
-    @keyframes float { 0%,100% {transform:translateY(0px);} 50%{transform:translateY(-8px);} }
 
-    /* Responsive */
-    @media (max-width: 900px) {
-      .kanban-board { flex-direction: column; gap: 2rem;}
-      .dashboard-scroll-wrapper, .page-scrollable { padding: 1.5rem 0.5rem; }
-      .glass-navbar { flex-direction: column; align-items: flex-start; padding: 1.1rem 0.5rem; }
-      .kanban-column { max-width: 100%; min-width: unset; }
-      .profile-card { margin-right: 5vw; }
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 1200px) {
+      .dashboard-scroll-wrapper,
+      .page-scrollable {
+        padding: 2rem;
+      }
+      
+      .glass-navbar {
+        margin: 1rem;
+        padding: 1rem 1.5rem;
+      }
     }
-    @media (max-width: 600px) {
-      .glass-navbar { flex-direction: column; padding: 1.1rem 0.1rem;}
-      .profile-card { margin-right: 2vw; }
-      .dashboard-scroll-wrapper { padding: 0.2rem; }
+    
+    @media (max-width: 768px) {
+      .dashboard-scroll-wrapper,
+      .page-scrollable {
+        padding: 1rem;
+      }
+      
+      .glass-navbar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem 1rem;
+      }
+      
+      .nav-right {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .kanban-board {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      
+      .kanban-column {
+        min-width: 100%;
+      }
     }
-    /* Hide scrollbars for glass look */
-    ::-webkit-scrollbar { width: 7px; background: rgba(255,255,255,0.04);}
-    ::-webkit-scrollbar-thumb { background: #ff704349; border-radius: 10px;}
-  </style>
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .fade-in {
+      animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* ========== ENHANCED FLOATING ELEMENTS ========== */
+    .floating-icon {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* ========== NOTIFICATION STYLES ========== */
+    .notification {
+      position: fixed;
+      top: 2rem;
+      right: 2rem;
+      background: rgba(25, 25, 50, 0.9);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification.success {
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .notification.error {
+      border-left: 4px solid #f44336;
+    }
+
+    /* ========== MODAL STYLES ========== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background: rgba(25, 25, 50, 0.9);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+  
+/* === 1. COMPONENT BOX HOVER EFFECT === */
+.task-card, .glass-card, .kanban-col-card {
+  background: transparent;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.task-card:hover, .glass-card:hover, .kanban-col-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  color: #000000;
+}
+
+/* === 2. CANCEL BUTTON FIX === */
+.btn-outline-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: none !important;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-outline-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* === 3. BACK TO DASHBOARD BUTTON THEME FIX === */
+.page .btn-outline-secondary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+.page .btn-outline-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102,126,234,0.6);
+}
+
+/* === 4. THEMED DROPDOWNS === */
+.form-select {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white'%3E%3Cpath d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+}
+.form-select:focus {
+  outline: none;
+  border-color: rgba(100, 150, 255, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+</style>
 </head>
 <body>
   <div class="background-wrapper" id="bg"></div>
-
-
   <div class="content-overlay">
     <!-- NAVBAR -->
-    <nav id="app-navbar" class="glass-navbar" style="display: none">
-      <div class="nav-left"><i class="fas fa-tasks"></i> Task Management Demo</div>
+    <nav id="app-navbar" class="glass-navbar fade-in" style="display: none">
+      <div class="nav-left">
+        <i class="fas fa-tasks"></i> Task Management Pro
+      </div>
       <div class="nav-right" id="navLinksContainer">
-        <a class="nav-link" href="#" onclick="routeTo('dashboard')"><i class="fas fa-columns icon-nav"></i>Dashboard</a>
-        <a class="nav-link" href="#" onclick="routeTo('kanban')"><i class="fas fa-table-columns icon-nav"></i>Kanban</a>
-        <a class="nav-link" href="#" onclick="routeTo('create')"><i class="fas fa-plus-circle icon-nav"></i>Create</a>
-        <a class="nav-link" href="#" onclick="routeTo('department')"><i class="fas fa-building icon-nav"></i>Department</a>
-        <a class="nav-link" href="#" onclick="routeTo('history')"><i class="fas fa-history icon-nav"></i>History</a>
-        <span class="user-box">
-          <img id="nav-avatar" src="https://i.pravatar.cc/100?img=11" class="avatar" title="View Profile" onclick="toggleProfileCard()" />
-        </span>
+        <a class="nav-link" href="#" onclick="routeTo('dashboard')">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a class="nav-link" href="#" onclick="routeTo('kanban')">
+          <i class="fas fa-columns"></i> Kanban
+        </a>
+        <a class="nav-link" href="#" onclick="routeTo('create')">
+          <i class="fas fa-plus-circle"></i> Create Task
+        </a>
+        <a class="nav-link" href="#" onclick="routeTo('department')">
+          <i class="fas fa-building"></i> Departments
+        </a>
+        <a class="nav-link" href="#" onclick="routeTo('history')">
+          <i class="fas fa-history"></i> History
+        </a>
+        <a class="nav-link" href="#" onclick="routeTo('reports')">
+          <i class="fas fa-chart-bar"></i> Reports
+        </a>
+        <img id="nav-avatar" 
+             src="https://i.pravatar.cc/100?img=11" 
+             class="avatar" 
+             title="View Profile" 
+             onclick="toggleProfileCard()" />
       </div>
     </nav>
+
     <!-- PROFILE CARD OVERLAY -->
-    <div id="profileOverlay" class="profile-card-overlay" style="display:none" onclick="toggleProfileCard()">
+    <div id="profileOverlay" class="profile-card-overlay" onclick="toggleProfileCard()">
       <div class="profile-card" onclick="event.stopPropagation()">
         <img src="https://i.pravatar.cc/100?img=11" class="card-profile-image" />
-        <div class="profile-details">
-          <h3 id="profileName">Admin User</h3>
-          <p><strong>Username:</strong> <span id="profileUsername">adminuser</span></p>
-          <button class="glass-button-sm mt-2" onclick="alert('Simulated logout for demo!');toggleProfileCard();routeTo('login')">
+        <div class="profile-details" style="text-align: center; color: #fff;">
+          <h3 id="profileName" style="color: #667eea; margin-bottom: 0.5rem;">Admin User</h3>
+          <p style="margin-bottom: 0.5rem;"><strong>Username:</strong> <span id="profileUsername">admin@test.com</span></p>
+          <p style="margin-bottom: 1.5rem; color: rgba(255,255,255,0.7);"><strong>Role:</strong> Administrator</p>
+          <button class="glass-button-sm" onclick="showUserProfile()">
+            <i class="fas fa-user-edit"></i> Edit Profile
+          </button>
+          <button class="glass-button-sm" onclick="handleLogout()">
             <i class="fas fa-sign-out-alt"></i> Logout
           </button>
-          <button class="glass-button-sm mt-2" onclick="toggleProfileCard()">
+          <button class="glass-button-sm" onclick="toggleProfileCard()" style="background: rgba(255,255,255,0.1);">
             <i class="fas fa-times"></i> Close
           </button>
         </div>
       </div>
     </div>
+
     <!-- LOGIN PAGE -->
-<div id="loginPage" style="display: flex; justify-content: center; align-items: center; min-height: 96vh;">
-  <div class="glass-card login-card" style="min-width:330px; max-width:410px; padding: 2rem; box-sizing: border-box;">
-    <h2 class="text-center text-light mb-4" style="text-align: center; color: #fff; margin-bottom: 1.5rem;">Admin Task Management Login</h2>
-    
-    <form id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
-      <label class="form-label text-light" style="color: #fff; font-weight: 500;">
-        Username<br>
-        <input id="loginUsername" class="form-control glass-input" required autocomplete="username"
-               value="admin@test.com"
-               style="padding: 0.5rem; margin-top: 0.3rem; border-radius: 0.5rem; width: 100%;" />
-      </label>
+    <div id="loginPage" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem;">
+      <div class="glass-card login-card fade-in">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <i class="fas fa-tasks" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+          <h2 style="color: #ffffff; margin-bottom: 0.5rem;">Welcome Back</h2>
+          <p style="color: rgba(255,255,255,0.7);">Sign in to your account</p>
+        </div>
+        
+        <form id="loginForm" style="display: flex; flex-direction: column;">
+          <div style="margin-bottom: 1.5rem;">
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              Email Address
+            </label>
+            <input id="loginUsername" 
+                   class="form-control" 
+                   type="email"
+                   required 
+                   autocomplete="username"
+                   value="admin@test.com"
+                   placeholder="Enter your email" />
+          </div>
 
-      <label class="form-label text-light" style="color: #fff; font-weight: 500;">
-        Password<br>
-        <input id="loginPassword" type="password" class="form-control glass-input" required autocomplete="current-password"
-               value="admin"
-               style="padding: 0.5rem; margin-top: 0.3rem; border-radius: 0.5rem; width: 100%;" />
-      </label>
+          <div style="margin-bottom: 2rem;">
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              Password
+            </label>
+            <input id="loginPassword" 
+                   type="password" 
+                   class="form-control" 
+                   required 
+                   autocomplete="current-password"
+                   value="admin"
+                   placeholder="Enter your password" />
+          </div>
 
-      <button type="submit" class="glass-button-sm w-100 mt-3" style="width: 100%; padding: 0.6rem; font-weight: bold; border-radius: 0.5rem;">Login</button>
-    </form>
+          <button type="submit" class="glass-button" style="width: 100%; margin-right: 0; padding: 1rem;">
+            <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i>
+            Sign In
+          </button>
+          
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="#" onclick="showPasswordReset()" style="color: #667eea; text-decoration: none; font-size: 0.9rem;">
+              Forgot your password?
+            </a>
+          </div>
+        </form>
 
-    <hr style="margin-top: 1.5rem; margin-bottom: 0.5rem;">
-    <small style="opacity: 0.72; color: #fff;">Hint: Any credentials accepted, only admin role shown.</small>
-  </div>
-</div>
-    <!-- APP MAIN PAGES -->
-    <div class="admin-container" id="appPages" style="display:none">
-      <!-- DASHBOARD (Default) -->
-      <div class="dashboard-scroll-wrapper page" id="page-dashboard" style="display:block">
-        <!-- Search/Action bar -->
-        <div class="glass-card" style="margin-bottom: 1.6rem;">
-          <div class="d-flex flex-column align-items-center">
-            <h5><i class="fas fa-search floating-icon"></i> Search Tasks</h5>
-            <div class="search-bar">
-              <input id="searchTaskInput" class="search-input" placeholder="🔍 Search by title..." oninput="renderDashboard()"/>
-              <button class="glass-button-sm" onclick="renderDashboard()">Search</button>
-            </div>
-          </div>
-        </div>
-        <!-- Single search result -->
-        <div class="glass-card" id="searchResult" style="display:none"></div>
-        <!-- Main tasks grid -->
-        <div class="glass-card">
-          <h4 class="text-center text-warning"><i class="fas fa-tasks"></i> Tasks Assigned by You</h4>
-          <div id="dashboardTasks" class="dashboard-grid mt-3" style="display:flex;flex-wrap:wrap;gap:1.3rem 2rem"></div>
-          <div id="noTasks" style="display:none;text-align:center; margin-top:1.2rem;">
-            <i class="fas fa-inbox" style="font-size:2.5rem; color:#B2553D"></i>
-            <div class="text-light">No tasks yet. Start by <a onclick="routeTo('create')">creating a new task</a>!</div>
-          </div>
-        </div>
-      </div>
-      <!-- KANBAN BOARD -->
-      <div class="dashboard-scroll-wrapper page" id="page-kanban" style="display:none">
-        <div class="glass-card" style="margin-bottom: 1.8rem;">
-          <h4 class="text-center"><i class="fas fa-table-columns"></i> Kanban Board</h4>
-        </div>
-        <div class="kanban-board" id="kanbanBoard"></div>
-      </div>
-      <!-- CREATE TASK -->
-      <div class="page-scrollable page" id="page-create" style="display:none">
-        <div class="create-task-wrapper mt-5">
-          <h2 class="text-center text-accent mb-4">Create New Task</h2>
-          <div class="glass-card p-4">
-            <form id="createTaskForm">
-              <label class="form-label fw-bold">Task Title<br>
-                <input id="taskTitle" class="form-control" required placeholder="Enter task title" />
-              </label>
-              <label class="form-label fw-bold">Task Description<br>
-                <textarea id="taskDescription" class="form-control" required placeholder="Describe the task" rows="4"></textarea>
-              </label>
-              <label class="form-label fw-bold">Task Status<br>
-                <select id="taskStatus" class="form-select">
-                  <option>PENDING</option>
-                  <option>IN_PROGRESS</option>
-                  <option>COMPLETE</option>
-                  <option>ASSIGED</option>
-                  <option>TRANSFER</option>
-                </select>
-              </label>
-              <label>
-                <input type="checkbox" id="taskIncludeComment" /> Include comment with task
-              </label>
-              <textarea id="taskCommentInput" class="form-control" placeholder="Write your comment here..." rows="2" style="display:none"></textarea>
-              <button type="submit" class="glass-button w-100 mb-2">Create Task</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      <!-- ASSIGN TASK (Simulated) -->
-      <div class="page page-scrollable" id="page-assign" style="display:none"></div>
-      <!-- UPDATE STATUS (Simulated) -->
-      <div class="page page-scrollable" id="page-update-status" style="display:none"></div>
-      <!-- ADD COMMENT -->
-      <div class="page page-scrollable" id="page-comment" style="display:none"></div>
-      <!-- DEPARTMENT VIEW -->
-      <div class="page page-scrollable" id="page-department" style="display:none">
-        <div class="glass-card" style="margin-bottom: 1.3rem;">
-          <div class="sticky-header d-flex justify-content-between align-items-center">
-            <h4 class="fw-bold m-0">Search Tasks by Department</h4>
-            <button class="btn btn-themed" onclick="routeTo('dashboard')">&larr; Back</button>
-          </div>
-        </div>
-        <div class="glass-card">
-          <div class="input-group mb-2" style="display:flex;align-items:center;gap:0.85rem">
-            <input id="deptInput" class="form-control themed-input" placeholder="Enter Department"/>
-            <button class="btn btn-themed" onclick="renderDepartment()">Search</button>
-          </div>
-          <div id="deptError" class="alert alert-danger themed-alert" style="display:none"></div>
-          <div class="row mt-3" id="deptTasks"></div>
-          <div id="deptNoResults" class="text-muted mt-4" style="margin-left:6px"></div>
-        </div>
-      </div>
-      <!-- HISTORY (Previously Assigned) -->
-      <div class="page page-scrollable" id="page-history" style="display:none">
-        <div class="glass-card" style="margin-bottom: 1.3rem;">
-          <div class="sticky-header d-flex justify-content-between align-items-center">
-            <h4 class="fw-bold m-0">Previously Assigned Tasks</h4>
-            <button class="btn btn-themed" onclick="routeTo('dashboard')">&larr; Back to Dashboard</button>
-          </div>
-        </div>
-        <div class="glass-card">
-          <div class="row" id="historyTasks"></div>
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+          <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; text-align: center;">
+            <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+            Demo credentials: admin@test.com / admin
+          </p>
         </div>
       </div>
     </div>
+
+    <!-- APP MAIN PAGES -->
+    <div class="admin-container" id="appPages" style="display:none">
+      
+      <!-- DASHBOARD -->
+      <div class="dashboard-scroll-wrapper page" id="page-dashboard" style="display:block">
+        <!-- Stats Overview -->
+        <div class="glass-card fade-in" style="margin-bottom: 2rem;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div style="text-align: center;">
+              <i class="fas fa-tasks" style="font-size: 2.5rem; color: #667eea; margin-bottom: 0.5rem;"></i>
+              <h3 style="margin: 0; color: #ffffff;" id="totalTasks">0</h3>
+              <p style="color: rgba(255,255,255,0.7); margin: 0;">Total Tasks</p>
+            </div>
+            <div style="text-align: center;">
+              <i class="fas fa-clock" style="font-size: 2.5rem; color: #ffa726; margin-bottom: 0.5rem;"></i>
+              <h3 style="margin: 0; color: #ffffff;" id="pendingTasks">0</h3>
+              <p style="color: rgba(255,255,255,0.7); margin: 0;">Pending</p>
+            </div>
+            <div style="text-align: center;">
+              <i class="fas fa-spinner" style="font-size: 2.5rem; color: #42a5f5; margin-bottom: 0.5rem;"></i>
+              <h3 style="margin: 0; color: #ffffff;" id="inProgressTasks">0</h3>
+              <p style="color: rgba(255,255,255,0.7); margin: 0;">In Progress</p>
+            </div>
+            <div style="text-align: center;">
+              <i class="fas fa-check-circle" style="font-size: 2.5rem; color: #4caf50; margin-bottom: 0.5rem;"></i>
+              <h3 style="margin: 0; color: #ffffff;" id="completedTasks">0</h3>
+              <p style="color: rgba(255,255,255,0.7); margin: 0;">Completed</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="glass-card fade-in" style="margin-bottom: 2rem;">
+          <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: end;">
+            <div style="flex: 1; min-width: 250px;">
+              <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                <i class="fas fa-search floating-icon"></i> Search Tasks
+              </label>
+              <input id="searchTaskInput" 
+                     class="search-input" 
+                     placeholder="Search by title, description, or assignee..." 
+                     oninput="renderDashboard()"/>
+            </div>
+            <div style="min-width: 150px;">
+              <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                Status Filter
+              </label>
+              <select id="statusFilter" class="form-select" onchange="renderDashboard()">
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="ASSIGNED">Assigned</option>
+                <option value="TRANSFER">Transfer</option>
+                <option value="COMPLETE">Complete</option>
+              </select>
+            </div>
+            <div style="min-width: 150px;">
+              <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                Department
+              </label>
+              <select id="departmentFilter" class="form-select" onchange="renderDashboard()">
+                <option value="">All Departments</option>
+                <option value="Design">Design</option>
+                <option value="Backend">Backend</option>
+                <option value="Frontend">Frontend</option>
+                <option value="QA">QA</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Marketing">Marketing</option>
+              </select>
+            </div>
+            <button class="glass-button-sm" onclick="clearFilters()">
+              <i class="fas fa-times"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Tasks Grid -->
+        <div class="glass-card fade-in">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h4 style="color: #ffffff; margin: 0;">
+              <i class="fas fa-tasks"></i> Your Tasks
+            </h4>
+            <div>
+              <button class="glass-button-sm" onclick="routeTo('create')">
+                <i class="fas fa-plus"></i> New Task
+              </button>
+              <button class="glass-button-sm" onclick="refreshTasks()">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+          </div>
+          
+          <div id="dashboardTasks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;"></div>
+          
+          <div id="noTasks" style="display: none; text-align: center; padding: 3rem;">
+            <i class="fas fa-inbox" style="font-size: 4rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+            <h5 style="color: rgba(255,255,255,0.7); margin-bottom: 1rem;">No tasks found</h5>
+            <p style="color: rgba(255,255,255,0.5);">Start by creating a new task or adjust your filters</p>
+            <button class="glass-button-sm" onclick="routeTo('create')">
+              <i class="fas fa-plus-circle"></i> Create Your First Task
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KANBAN BOARD -->
+      <div class="dashboard-scroll-wrapper page" id="page-kanban" style="display:none">
+        <div class="glass-card fade-in" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="color: #ffffff; margin: 0;">
+              <i class="fas fa-columns"></i> Kanban Board
+            </h4>
+            <button class="glass-button-sm" onclick="refreshKanban()">
+              <i class="fas fa-sync-alt"></i> Refresh Board
+            </button>
+          </div>
+        </div>
+        <div class="kanban-board" id="kanbanBoard"></div>
+      </div>
+
+      <!-- CREATE TASK -->
+      <div class="page-scrollable page" id="page-create" style="display:none">
+        <div class="glass-card fade-in" style="max-width: 800px; margin: 2rem auto;">
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <i class="fas fa-plus-circle" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+            <h2 style="color: #ffffff; margin-bottom: 0.5rem;">Create New Task</h2>
+            <p style="color: rgba(255,255,255,0.7);">Fill in the details to create a new task</p>
+          </div>
+          
+          <form id="createTaskForm" style="display: grid; gap: 1.5rem;">
+            <div>
+              <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                <i class="fas fa-tag"></i> Task Title *
+              </label>
+              <input id="taskTitle" class="form-control" required placeholder="Enter a descriptive task title" />
+            </div>
+            
+            <div>
+              <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                <i class="fas fa-align-left"></i> Description *
+              </label>
+              <textarea id="taskDescription" class="form-control" required placeholder="Describe the task in detail..." rows="4"></textarea>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+              <div>
+                <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                  <i class="fas fa-flag"></i> Initial Status
+                </label>
+                <select id="taskStatus" class="form-select">
+                  <option value="PENDING">Pending</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="ASSIGNED">Assigned</option>
+                </select>
+              </div>
+              
+              <div>
+                <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+                  <i class="fas fa-building"></i> Department
+                </label>
+                <select id="taskDepartment" class="form-select">
+                  <option value="Design">Design</option>
+                  <option value="Backend">Backend</option>
+                  <option value="Frontend">Frontend</option>
+                  <option value="QA">QA</option>
+                  <option value="DevOps">DevOps</option>
+                  <option value="Marketing">Marketing</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label style="display: flex; align-items: center; color: rgba(255,255,255,0.9); margin-bottom: 1rem;">
+                <input type="checkbox" id="taskIncludeComment" style="margin-right: 0.5rem;" />
+                <i class="fas fa-comment-dots" style="margin-right: 0.5rem;"></i>
+                Include initial comment
+              </label>
+              <textarea id="taskCommentInput" 
+                        class="form-control" 
+                        placeholder="Add an initial comment or instructions..." 
+                        rows="3" 
+                        style="display:none;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+              <button type="submit" class="glass-button">
+                <i class="fas fa-plus-circle"></i> Create Task
+              </button>
+              <button type="button" class="btn-outline-secondary" onclick="routeTo('dashboard')">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- DEPARTMENT VIEW -->
+      <div class="page-scrollable page" id="page-department" style="display:none">
+        <div class="glass-card fade-in" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <h4 style="color: #ffffff; margin: 0;">
+              <i class="fas fa-building"></i> Department Management
+            </h4>
+            <button class="btn-outline-secondary" onclick="routeTo('dashboard')">
+              <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+          </div>
+        </div>
+        
+        <div class="glass-card fade-in">
+          <div style="margin-bottom: 2rem;">
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              Search by Department
+            </label>
+            <div style="display: flex; gap: 1rem; align-items: end;">
+              <input id="deptInput" 
+                     class="form-control" 
+                     placeholder="Enter department name"
+                     style="flex: 1;"/>
+              <button class="glass-button" onclick="renderDepartment()">
+                <i class="fas fa-search"></i> Search
+              </button>
+            </div>
+          </div>
+          
+          <div id="deptError" style="display:none; background: rgba(244, 67, 54, 0.1); color: #f44336; padding: 1rem; border-radius: 8px; border-left: 4px solid #f44336; margin-bottom: 1rem;"></div>
+          
+          <div id="deptTasks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;"></div>
+          
+          <div id="deptNoResults" style="text-align: center; padding: 2rem; color: rgba(255,255,255,0.6);"></div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="page-scrollable page" id="page-history" style="display:none">
+        <div class="glass-card fade-in" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <h4 style="color: #ffffff; margin: 0;">
+              <i class="fas fa-history"></i> Task History
+            </h4>
+            <button class="btn-outline-secondary" onclick="routeTo('dashboard')">
+              <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+          </div>
+        </div>
+        
+        <div class="glass-card fade-in">
+          <div id="historyTasks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;"></div>
+        </div>
+      </div>
+
+      <!-- REPORTS PAGE -->
+      <div class="page-scrollable page" id="page-reports" style="display:none">
+        <div class="glass-card fade-in" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="color: #ffffff; margin: 0;">
+              <i class="fas fa-chart-bar"></i> Analytics & Reports
+            </h4>
+            <button class="glass-button-sm" onclick="generateReport()">
+              <i class="fas fa-download"></i> Export Report
+            </button>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+          <div class="glass-card fade-in">
+            <h5 style="color: #667eea; margin-bottom: 1rem;">
+              <i class="fas fa-chart-pie"></i> Task Status Distribution
+            </h5>
+            <div id="statusChart" style="height: 300px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6);">
+              Chart will be rendered here
+            </div>
+          </div>
+          
+          <div class="glass-card fade-in">
+            <h5 style="color: #667eea; margin-bottom: 1rem;">
+              <i class="fas fa-users"></i> Team Performance
+            </h5>
+            <div id="teamChart" style="height: 300px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6);">
+              Performance metrics will be displayed here
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK DETAIL MODAL -->
+      <div id="taskDetailModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 style="color: #ffffff; margin: 0;" id="modalTaskTitle">Task Details</h3>
+            <button class="glass-button-sm" onclick="closeTaskModal()">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          
+          <div id="taskDetailContent">
+            <!-- Task details will be populated here -->
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <button class="glass-button" onclick="editCurrentTask()">
+              <i class="fas fa-edit"></i> Edit Task
+            </button>
+            <button class="glass-button" onclick="addTaskComment()">
+              <i class="fas fa-comment"></i> Add Comment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION CONTAINER -->
+    <div id="notificationContainer" style="position: fixed; top: 2rem; right: 2rem; z-index: 1000;"></div>
   </div>
+
   <script>
-// Background images array
-        const backgrounds = [
-            'assets/images/Task_Management_Background1.jpg',
-            'assets/images/Task_Management_Background2.jpg',
-            'assets/images/Task_Management_Background3.jpg',
-            'assets/images/Task_Management_Background4.jpg'
-        ];
-
-        let current = 0;
-        const bgWrapper = document.querySelector('.background-wrapper');
-
-        // Function to change background
-        function changeBackground() {
-            bgWrapper.style.backgroundImage = `url('${backgrounds[current]}')`;
-            current = (current + 1) % backgrounds.length;
-        }
-
-        // Initial call + interval
-        changeBackground();
-        setInterval(changeBackground, 5000);
-
-    // ========= DEMO DATA =========
+    // ========= ENHANCED DEMO DATA =========
     let DUMMY_USERS = [
-      {id:1, name:'Alice Johnson', username:'alice', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=14'},
-      {id:2, name:'Bob Smith', username:'bob', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=12'},
-      {id:3, name:'Carla D.', username:'carla', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=22'},
-      {id:101, name:'Admin User', username:'adminuser', userRoles:'ADMIN', avatar:'https://i.pravatar.cc/100?img=11'}
+      {id: 1, name: 'Alice Johnson', username: 'alice.johnson@company.com', userRoles: 'EMPLOYEE', department: 'Design', avatar: 'https://i.pravatar.cc/100?img=14', taskAssignment: true, completeTask: 12},
+      {id: 2, name: 'Bob Smith', username: 'bob.smith@company.com', userRoles: 'EMPLOYEE', department: 'Backend', avatar: 'https://i.pravatar.cc/100?img=12', taskAssignment: true, completeTask: 8},
+      {id: 3, name: 'Carol Davis', username: 'carol.davis@company.com', userRoles: 'EMPLOYEE', department: 'Frontend', avatar: 'https://i.pravatar.cc/100?img=22', taskAssignment: false, completeTask: 15},
+      {id: 4, name: 'David Wilson', username: 'david.wilson@company.com', userRoles: 'EMPLOYEE', department: 'QA', avatar: 'https://i.pravatar.cc/100?img=32', taskAssignment: true, completeTask: 6},
+      {id: 5, name: 'Emma Brown', username: 'emma.brown@company.com', userRoles: 'EMPLOYEE', department: 'DevOps', avatar: 'https://i.pravatar.cc/100?img=42', taskAssignment: false, completeTask: 10},
+      {id: 6, name: 'Frank Miller', username: 'frank.miller@company.com', userRoles: 'EMPLOYER', department: 'Marketing', avatar: 'https://i.pravatar.cc/100?img=52', taskAssignment: false, completeTask: 3},
+      {id: 101, name: 'Admin User', username: 'admin@test.com', userRoles: 'ADMIN', department: 'All', avatar: 'https://i.pravatar.cc/100?img=11', taskAssignment: false, completeTask: 0}
     ];
+
     let DUMMY_TASKS = [
       {
-        taskId: 101, taskTitle: 'Design Landing Page', taskDescription: 'Modern responsive homepage.', assignedToId:1, assignedToName:'Alice Johnson', assignedFromId:101, assignedFromName:'Admin User',
-        previouslyAssignedToId:2, previouslyAssignedToName:'Bob Smith', taskStatus:'IN_PROGRESS', taskCreatedOn:new Date(Date.now()-6*86400000), assignedOn:new Date(Date.now()-3*86400000), completedAt:null, department:'Design', comments:[], progress:45
+        taskId: 101, taskTitle: 'Redesign Landing Page', taskDescription: 'Create a modern, responsive homepage with improved UX/UI design focusing on conversion optimization.', 
+        assignedToId: 1, assignedToName: 'Alice Johnson', assignedFromId: 101, assignedFromName: 'Admin User',
+        previouslyAssignedToId: null, previouslyAssignedToName: null, taskStatus: 'IN_PROGRESS', 
+        taskCreatedOn: new Date(Date.now() - 6*24*60*60*1000), assignedOn: new Date(Date.now() - 3*24*60*60*1000), 
+        completedAt: null, department: 'Design', comments: [
+          {id: 1, by: 'Admin User', role: 'CREATOR', content: 'Focus on mobile-first design approach', createdAt: new Date(Date.now() - 3*24*60*60*1000)},
+          {id: 2, by: 'Alice Johnson', role: 'ASSIGNED_TO', content: 'Working on wireframes, will have mockups ready by EOD', createdAt: new Date(Date.now() - 1*24*60*60*1000)}
+        ], 
+        progress: 65
       },
       {
-        taskId: 102, taskTitle: 'API Integration', taskDescription: 'Integrate the payment API.', assignedToId:2, assignedToName:'Bob Smith', assignedFromId:101, assignedFromName:'Admin User',
-        previouslyAssignedToId:1, previouslyAssignedToName:'Alice Johnson', taskStatus:'PENDING', taskCreatedOn:new Date(Date.now()-10*86400000), assignedOn:new Date(Date.now()-2*86400000), completedAt:null, department:'Backend', comments:[], progress:8
+        taskId: 102, taskTitle: 'Payment Gateway Integration', taskDescription: 'Integrate Stripe payment system with proper error handling and security measures.', 
+        assignedToId: 2, assignedToName: 'Bob Smith', assignedFromId: 101, assignedFromName: 'Admin User',
+        previouslyAssignedToId: null, previouslyAssignedToName: null, taskStatus: 'ASSIGNED', 
+        taskCreatedOn: new Date(Date.now() - 10*24*60*60*1000), assignedOn: new Date(Date.now() - 2*24*60*60*1000), 
+        completedAt: null, department: 'Backend', comments: [
+          {id: 3, by: 'Admin User', role: 'CREATOR', content: 'Use the latest Stripe API version', createdAt: new Date(Date.now() - 2*24*60*60*1000)}
+        ], 
+        progress: 25
       },
       {
-        taskId: 103, taskTitle: 'User Feedback System', taskDescription: 'Deploy feedback widget on dashboard.', assignedToId:3, assignedToName:'Carla D.', assignedFromId:101, assignedFromName:'Admin User',
-        previouslyAssignedToId:1, previouslyAssignedToName:'Alice Johnson', taskStatus:'COMPLETE', taskCreatedOn:new Date(Date.now()-17*86400000), assignedOn:new Date(Date.now()-13*86400000), completedAt:new Date(Date.now()-1*86400000), department:'QA', comments:[], progress:100
+        taskId: 103, taskTitle: 'User Feedback Dashboard', taskDescription: 'Implement comprehensive feedback collection and display system with analytics.', 
+        assignedToId: 3, assignedToName: 'Carol Davis', assignedFromId: 101, assignedFromName: 'Admin User',
+        previouslyAssignedToId: 1, previouslyAssignedToName: 'Alice Johnson', taskStatus: 'COMPLETE', 
+        taskCreatedOn: new Date(Date.now() - 17*24*60*60*1000), assignedOn: new Date(Date.now() - 13*24*60*60*1000), 
+        completedAt: new Date(Date.now() - 1*24*60*60*1000), department: 'Frontend', comments: [
+          {id: 4, by: 'Carol Davis', role: 'ASSIGNED_TO', content: 'Dashboard is complete with real-time updates', createdAt: new Date(Date.now() - 1*24*60*60*1000)}
+        ], 
+        progress: 100
       },
       {
-        taskId: 104, taskTitle: 'Marketing Blurb', taskDescription:'Prepare new product blurb.', assignedToId:1, assignedToName:'Alice Johnson', assignedFromId:101, assignedFromName:'Admin User',
-        previouslyAssignedToId:3, previouslyAssignedToName:'Carla D.', taskStatus:'ASSIGED', taskCreatedOn:new Date(Date.now()-5*86400000), assignedOn:new Date(Date.now()-4*86400000), completedAt:null, department:'Marketing', comments:[], progress:12
+        taskId: 104, taskTitle: 'Product Marketing Campaign', taskDescription: 'Develop comprehensive marketing strategy for new product launch including social media and email campaigns.', 
+        assignedToId: 6, assignedToName: 'Frank Miller', assignedFromId: 101, assignedFromName: 'Admin User',
+        previouslyAssignedToId: null, previouslyAssignedToName: null, taskStatus: 'PENDING', 
+        taskCreatedOn: new Date(Date.now() - 5*24*60*60*1000), assignedOn: new Date(Date.now() - 4*24*60*60*1000), 
+        completedAt: null, department: 'Marketing', comments: [], 
+        progress: 15
       },
       {
-        taskId: 105, taskTitle: 'Server Maintenance', taskDescription: 'Upgrade OS patches.', assignedToId:2, assignedToName:'Bob Smith', assignedFromId:101, assignedFromName:'Admin User',
-        previouslyAssignedToId:3, previouslyAssignedToName:'Carla D.', taskStatus:'TRANSFER', taskCreatedOn:new Date(Date.now()-4*86400000), assignedOn:new Date(Date.now()-4*86400000), completedAt:null, department:'DevOps', comments:[], progress:23
+        taskId: 105, taskTitle: 'Server Infrastructure Upgrade', taskDescription: 'Migrate to cloud infrastructure and implement auto-scaling with monitoring.', 
+        assignedToId: 5, assignedToName: 'Emma Brown', assignedFromId: 101, assignedFromName: 'Admin User',
+        previouslyAssignedToId: 2, previouslyAssignedToName: 'Bob Smith', taskStatus: 'TRANSFER', 
+        taskCreatedOn: new Date(Date.now() - 8*24*60*60*1000), assignedOn: new Date(Date.now() - 6*24*60*60*1000), 
+        completedAt: null, department: 'DevOps', comments: [
+          {id: 5, by: 'Bob Smith', role: 'REASSIGNED_TO', content: 'Initial server analysis completed, transferring to DevOps team', createdAt: new Date(Date.now() - 6*24*60*60*1000)}
+        ], 
+        progress: 30
+      },
+      {
+        taskId: 106, taskTitle: 'Mobile App Testing', taskDescription: 'Comprehensive testing of mobile application across different devices and OS versions.', 
+        assignedToId: 4, assignedToName: 'David Wilson', assignedFromId: 101, assignedFromName: 'Admin User',
+        previouslyAssignedToId: null, previouslyAssignedToName: null, taskStatus: 'IN_PROGRESS', 
+        taskCreatedOn: new Date(Date.now() - 3*24*60*60*1000), assignedOn: new Date(Date.now() - 1*24*60*60*1000), 
+        completedAt: null, department: 'QA', comments: [
+          {id: 6, by: 'David Wilson', role: 'ASSIGNED_TO', content: 'Found several UI issues on Android devices, documenting bugs', createdAt: new Date(Date.now() - 2*60*60*1000)}
+        ], 
+        progress: 40
       }
     ];
-    let DEPARTMENT_LIST = ['Design','Backend','QA','DevOps','Marketing'];
 
-    // ======= ROUTING AND STATE MGMT =======
+    let currentUser = null;
+    let backgroundImages = [
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80',
+      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1920&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=80',
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1920&q=80',
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=80'
+    ];
+    let currentBgIndex = 0;
+
+    // ======= ENHANCED ROUTING AND STATE MGMT =======
     function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(pg => pg.style.display='none');
-      let p = document.getElementById('page-'+pageId);
-      if (p) p.style.display='block';
-      if (pageId!=="login") {
+      document.querySelectorAll('.page').forEach(pg => pg.style.display = 'none');
+      let page = document.getElementById('page-' + pageId);
+      if (page) {
+        page.style.display = 'block';
+        page.classList.add('fade-in');
+      }
+      
+      if (pageId !== 'login') {
         document.getElementById('app-navbar').style.display = '';
         document.getElementById('appPages').style.display = '';
         document.getElementById('loginPage').style.display = 'none';
       } else {
-        document.getElementById('app-navbar').style.display='none';
-        document.getElementById('loginPage').style.display='';
-        document.getElementById('appPages').style.display='none';
+        document.getElementById('app-navbar').style.display = 'none';
+        document.getElementById('loginPage').style.display = '';
+        document.getElementById('appPages').style.display = 'none';
       }
     }
+
     function routeTo(page) {
       showPage(page);
-      if(page==='dashboard') renderDashboard();
-      if(page==='kanban') renderKanban();
-      if(page==='department') renderDepartment();
-      if(page==='history') renderHistory();
-      if(page==='create') setTimeout(()=>{document.getElementById('taskTitle').focus();},250);
-    }
-    // Profile card
-    function toggleProfileCard() {
-      let el = document.getElementById('profileOverlay');
-      el.style.display = el.style.display==='none'?'flex':'none';
-    }
-    // ====== LOGIN =====
-    document.getElementById('loginForm').onsubmit = function(e){
-      e.preventDefault();
-      showPage('dashboard');
-      renderDashboard();
-      document.getElementById('app-navbar').style.display = '';
-      document.getElementById('appPages').style.display = '';
-      document.getElementById('loginPage').style.display = 'none';
-      // Demo: set username
-      document.getElementById('profileName').innerText = 'Admin User';
-      document.getElementById('profileUsername').innerText = 'adminuser';
-    };
-
-    // ===== DASHBOARD LOGIC =====
-    function renderDashboard() {
-      // Render search and result
-      let searchVal = (document.getElementById('searchTaskInput')?.value || '').toLowerCase();
-      let board = document.getElementById('dashboardTasks');
-      board.innerHTML = '';
-      document.getElementById('noTasks').style.display = 'none';
-      let tasks = DUMMY_TASKS.filter(t => t.assignedFromName === 'Admin User');
-      if(searchVal) tasks = tasks.filter(t => t.taskTitle.toLowerCase().includes(searchVal));
-      if(tasks.length === 0){
-        document.getElementById('noTasks').style.display = '';
-      } else {
-        tasks.forEach(task => board.appendChild(renderTaskCard(task, true)));
+      switch(page) {
+        case 'dashboard':
+          renderDashboard();
+          updateStats();
+          break;
+        case 'kanban':
+          renderKanban();
+          break;
+        case 'department':
+          renderDepartment();
+          break;
+        case 'history':
+          renderHistory();
+          break;
+        case 'reports':
+          renderReports();
+          break;
+        case 'create':
+          setTimeout(() => {
+            const titleInput = document.getElementById('taskTitle');
+            if (titleInput) titleInput.focus();
+          }, 250);
+          break;
       }
-      // Show single search result card
-      let sr = document.getElementById('searchResult');
-      if(searchVal && tasks.length>0) {
-        sr.style.display = '';
-        sr.innerHTML='';
-        sr.appendChild(renderTaskCard(tasks[0], false, true));
-      } else { sr.style.display='none'; }
     }
-    // Task card for dashboard
-    function renderTaskCard(task, showActions=true, isResult=false) {
-      let c = document.createElement('div');
-      c.className = 'task-card';
-      c.setAttribute('data-status', task.taskStatus);
-      c.innerHTML = `
-        <div class="urgency-dot"></div>
-        <div class="task-header"><h5 style="margin:2px 0 0">${task.taskTitle}</h5></div>
-        <div>${task.taskDescription}</div>
-        <div style="font-size:.97rem; margin:3px 0 2px">
-          <strong>Status:</strong> ${task.taskStatus.charAt(0)+task.taskStatus.slice(1).toLowerCase()}<br>
-          <strong>Assigned To:</strong> ${task.assignedToName}
-        </div>
-        <div><strong>Created:</strong> ${task.taskCreatedOn.toLocaleDateString()}</div>
-        <div class="progress-bar" title="Task Progress">
-          <div class="progress-bar-inner" style="width:${task.progress||Math.floor(Math.random()*45+17)}%"></div>
+
+    // ====== ENHANCED NOTIFICATIONS ======
+    function showNotification(message, type = 'success', duration = 3000) {
+      const container = document.getElementById('notificationContainer');
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+          <span>${message}</span>
         </div>
       `;
-      if(showActions) {
-        let bar = document.createElement('div');
-        bar.className = "d-flex flex-wrap gap-2 mt-2";
-        // Assign
-        let btn1=document.createElement('button');
-        btn1.className='glass-button-sm';
-        btn1.innerHTML='<i class="fas fa-user-plus"></i> Assign';
-        btn1.onclick=()=>showAssignTask(task);
-        bar.appendChild(btn1);
-        // Update
-        let btn2=document.createElement('button');
-        btn2.className='glass-button-sm';
-        btn2.innerHTML='<i class="fas fa-edit"></i> Update';
-        btn2.onclick=()=>showUpdateStatus(task);
-        bar.appendChild(btn2);
-        // Comment
-        let btn3=document.createElement('button');
-        btn3.className='glass-button-sm';
-        btn3.innerHTML='<i class="fas fa-comment-dots"></i> Comment';
-        btn3.onclick=()=>showAddComment(task);
-        bar.appendChild(btn3);
-        c.appendChild(bar);
-      }
-      return c;
+      
+      container.appendChild(notification);
+      
+      // Show notification
+      setTimeout(() => notification.classList.add('show'), 100);
+      
+      // Hide and remove notification
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => container.removeChild(notification), 300);
+      }, duration);
     }
 
-    // ===== KANBAN ======
-    function renderKanban(){
-      let colStatus = [
-        {status:'PENDING', label:'Pending', color:'#ffa726'},
-        {status:'IN_PROGRESS', label:'In Progress', color:'#FF7043'},
-        {status:'ASSIGED', label:'Assigned', color:'#ffd000'},
-        {status:'TRANSFER', label:'Transfer', color:'#b2bfff'},
-        {status:'COMPLETE', label:'Completed', color:'#384750'}
-      ];
-      let kanban = document.getElementById('kanbanBoard');
-      kanban.innerHTML='';
-      colStatus.forEach(col=>{
-        let ks = document.createElement('div');
-        ks.className = 'kanban-column';
-        ks.innerHTML = `<div class="kanban-col-title" style="color:${col.color}">${col.label}</div>`;
-        let matches = DUMMY_TASKS.filter(t => t.taskStatus===col.status);
-        if(matches.length===0) ks.innerHTML += "<div class='text-muted'><i>No tasks</i></div>";
-        matches.forEach(task=>{
-          let card = renderTaskCard(task, true, false);
-          card.style.marginBottom='1.1rem';
-          // avatar + quick progress
-          let user = DUMMY_USERS.find(u=>u.id===task.assignedToId);
-          card.innerHTML=
-           `<div style="display:flex;align-items:center;gap:8px">
-             <img src="${user?.avatar||'https://i.pravatar.cc/100?img=14'}" style="width:33px;height:33px;border-radius:50%">
-             <strong>${task.assignedToName}</strong>
-            </div>` + card.innerHTML;
-          ks.appendChild(card);
+    // ====== PROFILE MANAGEMENT ======
+    function toggleProfileCard() {
+      const overlay = document.getElementById('profileOverlay');
+      overlay.classList.toggle('active');
+    }
+
+    function showUserProfile() {
+      showNotification('Profile editing feature coming soon!', 'success');
+      toggleProfileCard();
+    }
+
+    function handleLogout() {
+      showNotification('Logged out successfully', 'success');
+      setTimeout(() => {
+        toggleProfileCard();
+        routeTo('login');
+      }, 1000);
+    }
+
+    function showPasswordReset() {
+      showNotification('Password reset link sent to your email!', 'success');
+    }
+
+    // ====== ENHANCED LOGIN ======
+    document.getElementById('loginForm').onsubmit = function(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      // Simulate login validation
+      currentUser = DUMMY_USERS.find(u => u.username === username) || DUMMY_USERS[6]; // Default to admin
+      
+      showNotification(`Welcome back, ${currentUser.name}!`, 'success');
+      
+      // Update profile info
+      document.getElementById('profileName').innerText = currentUser.name;
+      document.getElementById('profileUsername').innerText = currentUser.username;
+      document.getElementById('nav-avatar').src = currentUser.avatar;
+      document.querySelector('.card-profile-image').src = currentUser.avatar;
+      
+      setTimeout(() => {
+        showPage('dashboard');
+        renderDashboard();
+        updateStats();
+      }, 1000);
+    };
+
+    // ====== ENHANCED DASHBOARD LOGIC ======
+    function updateStats() {
+      const tasks = DUMMY_TASKS.filter(t => t.assignedFromName === 'Admin User' || currentUser.userRoles === 'ADMIN');
+      
+      document.getElementById('totalTasks').innerText = tasks.length;
+      document.getElementById('pendingTasks').innerText = tasks.filter(t => t.taskStatus === 'PENDING').length;
+      document.getElementById('inProgressTasks').innerText = tasks.filter(t => t.taskStatus === 'IN_PROGRESS').length;
+      document.getElementById('completedTasks').innerText = tasks.filter(t => t.taskStatus === 'COMPLETE').length;
+    }
+
+    function renderDashboard() {
+      const searchVal = (document.getElementById('searchTaskInput')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('statusFilter')?.value || '';
+      const deptFilter = document.getElementById('departmentFilter')?.value || '';
+      
+      const board = document.getElementById('dashboardTasks');
+      const noTasksDiv = document.getElementById('noTasks');
+      
+      board.innerHTML = '';
+      
+      let tasks = DUMMY_TASKS.filter(t => 
+        t.assignedFromName === 'Admin User' || currentUser?.userRoles === 'ADMIN'
+      );
+      
+      // Apply filters
+      if (searchVal) {
+        tasks = tasks.filter(t => 
+          t.taskTitle.toLowerCase().includes(searchVal) ||
+          t.taskDescription.toLowerCase().includes(searchVal) ||
+          t.assignedToName.toLowerCase().includes(searchVal)
+        );
+      }
+      
+      if (statusFilter) {
+        tasks = tasks.filter(t => t.taskStatus === statusFilter);
+      }
+      
+      if (deptFilter) {
+        tasks = tasks.filter(t => t.department === deptFilter);
+      }
+      
+      if (tasks.length === 0) {
+        noTasksDiv.style.display = 'block';
+      } else {
+        noTasksDiv.style.display = 'none';
+        tasks.forEach(task => {
+          const card = renderTaskCard(task, true);
+          card.classList.add('fade-in');
+          board.appendChild(card);
         });
-        kanban.appendChild(ks);
+      }
+    }
+
+    function renderTaskCard(task, showActions = true) {
+      const card = document.createElement('div');
+      card.className = 'task-card';
+      card.setAttribute('data-status', task.taskStatus);
+      card.onclick = () => showTaskDetails(task);
+      
+      const assignedUser = DUMMY_USERS.find(u => u.id === task.assignedToId);
+      const statusColors = {
+        'PENDING': '#ffa726',
+        'IN_PROGRESS': '#42a5f5', 
+        'ASSIGNED': '#66bb6a',
+        'TRANSFER': '#ab47bc',
+        'COMPLETE': '#4caf50'
+      };
+      
+      card.innerHTML = `
+        <div class="urgency-dot" style="background: ${statusColors[task.taskStatus] || '#666'};"></div>
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+          ${assignedUser ? `<img src="${assignedUser.avatar}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ${statusColors[task.taskStatus] || '#666'};">` : ''}
+          <div style="flex: 1;">
+            <h5 style="margin: 0 0 0.25rem 0; color: #ffffff;">${task.taskTitle}</h5>
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+              Assigned to: <strong>${task.assignedToName}</strong>
+            </div>
+          </div>
+        </div>
+        
+        <p style="color: rgba(255,255,255,0.8); margin-bottom: 1rem; line-height: 1.4;">
+          ${task.taskDescription}
+        </p>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+          <div>
+            <i class="fas fa-flag" style="color: ${statusColors[task.taskStatus] || '#666'}; margin-right: 0.5rem;"></i>
+            ${task.taskStatus.replace('_', ' ')}
+          </div>
+          <div>
+            <i class="fas fa-calendar" style="margin-right: 0.5rem;"></i>
+            ${task.taskCreatedOn.toLocaleDateString()}
+          </div>
+        </div>
+        
+        <div style="margin-bottom: ${showActions ? '1rem' : '0'};">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+            <span>Progress</span>
+            <span>${task.progress}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar-inner" style="width: ${task.progress}%;"></div>
+          </div>
+        </div>
+        
+        ${task.comments && task.comments.length > 0 ? `
+          <div style="margin-bottom: ${showActions ? '1rem' : '0'};">
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">
+              <i class="fas fa-comments" style="margin-right: 0.5rem;"></i>
+              ${task.comments.length} comment${task.comments.length !== 1 ? 's' : ''}
+            </div>
+          </div>
+        ` : ''}
+      `;
+      
+      if (showActions) {
+        const actionBar = document.createElement('div');
+        actionBar.style.cssText = 'display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;';
+        actionBar.onclick = (e) => e.stopPropagation();
+        
+        const assignBtn = document.createElement('button');
+        assignBtn.className = 'glass-button-sm';
+        assignBtn.innerHTML = '<i class="fas fa-user-plus"></i> Assign';
+        assignBtn.onclick = (e) => { e.stopPropagation(); showAssignTask(task); };
+        
+        const updateBtn = document.createElement('button');
+        updateBtn.className = 'glass-button-sm';
+        updateBtn.innerHTML = '<i class="fas fa-edit"></i> Update';
+        updateBtn.onclick = (e) => { e.stopPropagation(); showUpdateStatus(task); };
+        
+        const commentBtn = document.createElement('button');
+        commentBtn.className = 'glass-button-sm';
+        commentBtn.innerHTML = '<i class="fas fa-comment-dots"></i> Comment';
+        commentBtn.onclick = (e) => { e.stopPropagation(); showAddComment(task); };
+        
+        actionBar.appendChild(assignBtn);
+        actionBar.appendChild(updateBtn);
+        actionBar.appendChild(commentBtn);
+        card.appendChild(actionBar);
+      }
+      
+      return card;
+    }
+
+    function showTaskDetails(task) {
+      const modal = document.getElementById('taskDetailModal');
+      const titleEl = document.getElementById('modalTaskTitle');
+      const contentEl = document.getElementById('taskDetailContent');
+      
+      titleEl.innerText = task.taskTitle;
+      
+      const assignedUser = DUMMY_USERS.find(u => u.id === task.assignedToId);
+      const createdUser = DUMMY_USERS.find(u => u.id === task.assignedFromId);
+      
+      contentEl.innerHTML = `
+        <div style="display: grid; gap: 1.5rem;">
+          <div>
+            <h6 style="color: #667eea; margin-bottom: 0.5rem;">Description</h6>
+            <p style="color: rgba(255,255,255,0.9); line-height: 1.6;">${task.taskDescription}</p>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Status</h6>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="urgency-dot" style="background: ${task.taskStatus === 'COMPLETE' ? '#4caf50' : task.taskStatus === 'IN_PROGRESS' ? '#42a5f5' : '#ffa726'}; position: static; margin: 0;"></div>
+                <span style="color: rgba(255,255,255,0.9);">${task.taskStatus.replace('_', ' ')}</span>
+              </div>
+            </div>
+            
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Department</h6>
+              <p style="color: rgba(255,255,255,0.9); margin: 0;">${task.department}</p>
+            </div>
+            
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Progress</h6>
+              <div class="progress-bar" style="margin: 0;">
+                <div class="progress-bar-inner" style="width: ${task.progress}%;"></div>
+              </div>
+              <span style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">${task.progress}%</span>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Assigned To</h6>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                ${assignedUser ? `<img src="${assignedUser.avatar}" style="width: 32px; height: 32px; border-radius: 50%;">` : ''}
+                <span style="color: rgba(255,255,255,0.9);">${task.assignedToName}</span>
+              </div>
+            </div>
+            
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Created By</h6>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                ${createdUser ? `<img src="${createdUser.avatar}" style="width: 32px; height: 32px; border-radius: 50%;">` : ''}
+                <span style="color: rgba(255,255,255,0.9);">${task.assignedFromName}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Created</h6>
+              <p style="color: rgba(255,255,255,0.9); margin: 0;">${task.taskCreatedOn.toLocaleDateString()}</p>
+            </div>
+            
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Assigned</h6>
+              <p style="color: rgba(255,255,255,0.9); margin: 0;">${task.assignedOn ? task.assignedOn.toLocaleDateString() : 'Not assigned'}</p>
+            </div>
+            
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 0.5rem;">Completed</h6>
+              <p style="color: rgba(255,255,255,0.9); margin: 0;">${task.completedAt ? task.completedAt.toLocaleDateString() : 'Not completed'}</p>
+            </div>
+          </div>
+          
+          ${task.comments && task.comments.length > 0 ? `
+            <div>
+              <h6 style="color: #667eea; margin-bottom: 1rem;">Comments (${task.comments.length})</h6>
+              <div style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;">
+                ${task.comments.map(comment => `
+                  <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid #667eea;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                      <strong style="color: #667eea;">${comment.by}</strong>
+                      <small style="color: rgba(255,255,255,0.6);">${comment.createdAt ? comment.createdAt.toLocaleDateString() : 'Recently'}</small>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.9); margin: 0; line-height: 1.4;">${comment.content}</p>
+                    <small style="color: rgba(255,255,255,0.5);">${comment.role}</small>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      modal.classList.add('active');
+      window.currentTaskForModal = task;
+    }
+
+    function closeTaskModal() {
+      document.getElementById('taskDetailModal').classList.remove('active');
+      window.currentTaskForModal = null;
+    }
+
+    function editCurrentTask() {
+      if (window.currentTaskForModal) {
+        closeTaskModal();
+        showUpdateStatus(window.currentTaskForModal);
+      }
+    }
+
+    function addTaskComment() {
+      if (window.currentTaskForModal) {
+        closeTaskModal();
+        showAddComment(window.currentTaskForModal);
+      }
+    }
+
+    // ===== ENHANCED KANBAN ======
+    function renderKanban() {
+      const columnConfigs = [
+        {status: 'PENDING', label: 'Pending', color: '#ffa726'},
+        {status: 'ASSIGNED', label: 'Assigned', color: '#66bb6a'},
+        {status: 'IN_PROGRESS', label: 'In Progress', color: '#42a5f5'},
+        {status: 'TRANSFER', label: 'Transfer', color: '#ab47bc'},
+        {status: 'COMPLETE', label: 'Completed', color: '#4caf50'}
+      ];
+      
+      const kanbanBoard = document.getElementById('kanbanBoard');
+      kanbanBoard.innerHTML = '';
+      
+      columnConfigs.forEach(col => {
+        const column = document.createElement('div');
+        column.className = 'kanban-column fade-in';
+        
+        const tasks = DUMMY_TASKS.filter(t => t.taskStatus === col.status);
+        
+        column.innerHTML = `
+          <div class="kanban-col-title" style="color: ${col.color};">
+            <i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i>
+            ${col.label} 
+            <span style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem; margin-left: 0.5rem;">
+              ${tasks.length}
+            </span>
+          </div>
+        `;
+        
+        if (tasks.length === 0) {
+          const emptyState = document.createElement('div');
+          emptyState.style.cssText = 'text-align: center; padding: 2rem; color: rgba(255,255,255,0.5);';
+          emptyState.innerHTML = `
+            <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.3;"></i>
+            <p style="margin: 0; font-size: 0.9rem;">No ${col.label.toLowerCase()} tasks</p>
+          `;
+          column.appendChild(emptyState);
+        } else {
+          tasks.forEach(task => {
+            const taskCard = renderTaskCard(task, false);
+            taskCard.style.marginBottom = '1rem';
+            taskCard.style.cursor = 'pointer';
+            column.appendChild(taskCard);
+          });
+        }
+        
+        kanbanBoard.appendChild(column);
       });
     }
 
-    // ====== CREATE TASK =======
-    document.getElementById('taskIncludeComment').onchange = function(){
-      document.getElementById('taskCommentInput').style.display = this.checked? '':'none';
+    function refreshKanban() {
+      showNotification('Kanban board refreshed', 'success', 2000);
+      renderKanban();
     }
-    document.getElementById('createTaskForm').onsubmit = function(ev){
-      ev.preventDefault();
-      let newTask = {
-        taskId:Math.floor(Math.random()*90000+200),
-        taskTitle:document.getElementById('taskTitle').value,
-        taskDescription:document.getElementById('taskDescription').value,
-        assignedToId:2,
-        assignedToName:'Bob Smith',
-        assignedFromId:101,
-        assignedFromName:'Admin User',
-        previouslyAssignedToId:3,
-        previouslyAssignedToName:'Carla D.',
-        taskStatus:document.getElementById('taskStatus').value || 'PENDING',
-        taskCreatedOn:new Date(),
-        assignedOn:new Date(),
-        completedAt:null,
-        department:'Auto',
-        comments:[],
-        progress:(document.getElementById('taskStatus').value==='COMPLETE')?100:0
+
+    // ====== ENHANCED CREATE TASK =======
+    document.getElementById('taskIncludeComment').onchange = function() {
+      const commentInput = document.getElementById('taskCommentInput');
+      commentInput.style.display = this.checked ? 'block' : 'none';
+      if (this.checked) commentInput.focus();
+    };
+
+    document.getElementById('createTaskForm').onsubmit = function(e) {
+      e.preventDefault();
+      
+      const newTask = {
+        taskId: Date.now(), // Simple ID generation
+        taskTitle: document.getElementById('taskTitle').value,
+        taskDescription: document.getElementById('taskDescription').value,
+        assignedToId: 2, // Default to Bob Smith
+        assignedToName: 'Bob Smith',
+        assignedFromId: currentUser?.id || 101,
+        assignedFromName: currentUser?.name || 'Admin User',
+        previouslyAssignedToId: null,
+        previouslyAssignedToName: null,
+        taskStatus: document.getElementById('taskStatus').value || 'PENDING',
+        taskCreatedOn: new Date(),
+        assignedOn: new Date(),
+        completedAt: null,
+        department: document.getElementById('taskDepartment').value,
+        comments: [],
+        progress: 0
       };
-      if(document.getElementById('taskIncludeComment').checked && document.getElementById('taskCommentInput').value.trim()) {
-        newTask.comments.push({by:'Admin User',role:'CREATOR',content:document.getElementById('taskCommentInput').value});
+      
+      // Add initial comment if provided
+      if (document.getElementById('taskIncludeComment').checked) {
+        const commentContent = document.getElementById('taskCommentInput').value.trim();
+        if (commentContent) {
+          newTask.comments.push({
+            id: Date.now(),
+            by: currentUser?.name || 'Admin User',
+            role: 'CREATOR',
+            content: commentContent,
+            createdAt: new Date()
+          });
+        }
       }
+      
       DUMMY_TASKS.push(newTask);
-      alert('Task created! (Demo)');
-      routeTo('dashboard');
-    }
-    // ===== ASSIGN TASK =====
-    function showAssignTask(task){
-      showPage('assign');
-      let pg = document.getElementById('page-assign');
-      pg.innerHTML = '';
-      let card = document.createElement('div');
-      card.className='glass-card mx-auto mt-5';
-      card.style.maxWidth='640px';
-      card.innerHTML=`
-        <div class="sticky-header">
-          <h3 class="text-center" style="color:var(--pastel-blue);margin-bottom:12px">Assign Task: <span style="color:#ff9d7a">${task.taskTitle}</span></h3>
-        </div>
-        <div class="scrollable-section">
-          <div class="mb-3"><b>Title:</b> ${task.taskTitle}</div>
-          <div class="mb-3"><b>Description:</b> ${task.taskDescription}</div>
-          <form id="assignForm">
-            <label class="form-label">Assign To<br>
-              <select class="form-select" id="assignTo" required>
-                <option value="">Select an employee</option>
-                ${DUMMY_USERS.filter(u=>u.userRoles==='EMPLOYEE').map(emp=>`<option value="${emp.username}">${emp.name} (${emp.username})</option>`).join('')}
-              </select>
-            </label>
-            <label class="form-label">Comment (optional)<br>
-              <textarea class="form-control" id="assignComment" rows="3" placeholder="Write a comment"></textarea>
-            </label>
-            <button type="submit" class="themed-button w-100 mt-2">Assign Task</button>
-          </form>
-          <div class="text-center mt-3">
-            <button class="glass-button-sm" onclick="routeTo('dashboard')">Back to Dashboard</button>
+      showNotification(`Task "${newTask.taskTitle}" created successfully!`, 'success');
+      
+      // Reset form
+      document.getElementById('createTaskForm').reset();
+      document.getElementById('taskCommentInput').style.display = 'none';
+      
+      setTimeout(() => routeTo('dashboard'), 1500);
+    };
+
+    // ===== ENHANCED ASSIGN TASK =====
+    function showAssignTask(task) {
+      const modal = document.getElementById('taskDetailModal');
+      const titleEl = document.getElementById('modalTaskTitle');
+      const contentEl = document.getElementById('taskDetailContent');
+      
+      titleEl.innerText = `Assign Task: ${task.taskTitle}`;
+      
+      const employees = DUMMY_USERS.filter(u => u.userRoles === 'EMPLOYEE');
+      
+      contentEl.innerHTML = `
+        <form id="assignTaskForm" style="display: grid; gap: 1.5rem;">
+          <div>
+            <h6 style="color: #667eea; margin-bottom: 0.5rem;">Current Task Details</h6>
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+              <p style="color: rgba(255,255,255,0.9); margin: 0 0 0.5rem 0;"><strong>Title:</strong> ${task.taskTitle}</p>
+              <p style="color: rgba(255,255,255,0.9); margin: 0;"><strong>Description:</strong> ${task.taskDescription}</p>
+            </div>
           </div>
-        </div>
-      `;
-      pg.appendChild(card);
-      document.getElementById('assignForm').onsubmit = function(e){
-        e.preventDefault();
-        let user = DUMMY_USERS.filter(u=>u.userRoles==='EMPLOYEE').find(u=>u.username===document.getElementById('assignTo').value);
-        if(user){
-          task.assignedToId = user.id; task.assignedToName=user.name;
-          task.comments = task.comments || [];
-          if(document.getElementById('assignComment').value.trim())
-            task.comments.push({by:'Admin User',role:'CREATOR',content:document.getElementById('assignComment').value});
-          alert(`Task "${task.taskTitle}" assigned to ${user.name} (demo)`);
-          routeTo('dashboard');
-        } else alert('Must select an employee');
-      }
-    }
-    // ===== UPDATE STATUS =====
-    function showUpdateStatus(task) {
-      showPage('update-status');
-      let pg = document.getElementById('page-update-status');
-      pg.innerHTML = '';
-      let card = document.createElement('div');
-      card.className='glass-card mx-auto mt-5';
-      card.style.maxWidth='640px';
-      card.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 style="margin-bottom:.6rem">Update Task Status</h3>
-          <button class="btn btn-outline-secondary" onclick="routeTo('dashboard')">&larr; Back</button>
-        </div>
-        <h5 class="mb-2">Task Title: ${task.taskTitle}</h5>
-        <p class="mb-3">Description: ${task.taskDescription}</p>
-        <form id="updateForm">
-          <label for="status" class="form-label">Select New Status<br>
-            <select class="form-select" id="updateStatusInput" required>
-              <option value="PENDING" ${task.taskStatus==='PENDING'?'selected':''}>PENDING</option>
-              <option value="IN_PROGRESS" ${task.taskStatus==='IN_PROGRESS'?'selected':''}>IN_PROGRESS</option>
-              <option value="ASSIGED" ${task.taskStatus==='ASSIGED'?'selected':''}>ASSIGED</option>
-              <option value="TRANSFER" ${task.taskStatus==='TRANSFER'?'selected':''}>TRANSFER</option>
-              <option value="COMPLETE" ${task.taskStatus==='COMPLETE'?'selected':''}>COMPLETE</option>
+          
+          <div>
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              <i class="fas fa-user"></i> Assign To
+            </label>
+            <select id="assignToSelect" class="form-select" required>
+              <option value="">Select an employee</option>
+              ${employees.map(emp => `
+                <option value="${emp.username}" ${task.assignedToId === emp.id ? 'selected' : ''}>
+                  ${emp.name} - ${emp.department} (${emp.completeTask} tasks completed)
+                </option>
+              `).join('')}
             </select>
-          </label>
-          <button type="submit" class="btn btn-success w-100">Update Status</button>
+          </div>
+          
+          <div>
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              <i class="fas fa-comment"></i> Assignment Comment (Optional)
+            </label>
+            <textarea id="assignComment" class="form-control" rows="3" placeholder="Add instructions or notes for the assignee..."></textarea>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button type="submit" class="glass-button">
+              <i class="fas fa-user-plus"></i> Assign Task
+            </button>
+            <button type="button" class="btn-outline-secondary" onclick="closeTaskModal()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
         </form>
       `;
-      pg.appendChild(card);
-      document.getElementById('updateForm').onsubmit = function(ev){
-        ev.preventDefault();
-        let s = document.getElementById('updateStatusInput').value;
-        task.taskStatus = s;
-        task.progress = (s==='COMPLETE')?100: task.progress || Math.random()*60+15;
-        alert('Task status updated! (Demo)');
-        routeTo('dashboard');
-      }
+      
+      modal.classList.add('active');
+      
+      document.getElementById('assignTaskForm').onsubmit = function(e) {
+        e.preventDefault();
+        const selectedUser = employees.find(u => u.username === document.getElementById('assignToSelect').value);
+        const comment = document.getElementById('assignComment').value.trim();
+        
+        if (selectedUser) {
+          // Update task assignment
+          task.assignedToId = selectedUser.id;
+          task.assignedToName = selectedUser.name;
+          task.assignedOn = new Date();
+          task.taskStatus = 'ASSIGNED';
+          
+          // Add assignment comment
+          if (comment) {
+            task.comments = task.comments || [];
+            task.comments.push({
+              id: Date.now(),
+              by: currentUser?.name || 'Admin User',
+              role: 'CREATOR',
+              content: comment,
+              createdAt: new Date()
+            });
+          }
+          
+          showNotification(`Task assigned to ${selectedUser.name}`, 'success');
+          closeTaskModal();
+          renderDashboard();
+          updateStats();
+        } else {
+          showNotification('Please select an employee', 'error');
+        }
+      };
     }
 
-    // ===== ADD COMMENT =====
-    function showAddComment(task){
-      showPage('comment');
-      let pg = document.getElementById('page-comment');
-      pg.innerHTML = '';
-      let card = document.createElement('div');
-      card.className='glass-card mx-auto mt-5';
-      card.style.maxWidth='600px';
-      card.innerHTML = `
-        <div class="sticky-header"><h3 class="text-center" style="color:var(--pastel-blue);margin-bottom:12px">Add Comment to Task</h3></div>
-        <div class="scrollable-section">
-          <label class="form-label fw-bold">Task Title<br>
-            <input type="text" class="form-control" value="${task.taskTitle}" disabled/>
-          </label>
-          <label class="form-label fw-bold">Comment<br>
-            <textarea id="commentInputBox" class="form-control" rows="4" placeholder="Write your comment here..." required></textarea>
-          </label>
-          <div class="d-flex justify-content-between mt-4">
-            <button class="themed-button" onclick="routeTo('dashboard')">Back</button>
-            <button class="themed-button" onclick="submitDemoComment(${task.taskId})">Submit</button>
+    // ===== ENHANCED UPDATE STATUS =====
+    function showUpdateStatus(task) {
+      const modal = document.getElementById('taskDetailModal');
+      const titleEl = document.getElementById('modalTaskTitle');
+      const contentEl = document.getElementById('taskDetailContent');
+      
+      titleEl.innerText = `Update Status: ${task.taskTitle}`;
+      
+      contentEl.innerHTML = `
+        <form id="updateStatusForm" style="display: grid; gap: 1.5rem;">
+          <div>
+            <h6 style="color: #667eea; margin-bottom: 0.5rem;">Current Status</h6>
+            <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+              <div class="urgency-dot" style="background: ${task.taskStatus === 'COMPLETE' ? '#4caf50' : task.taskStatus === 'IN_PROGRESS' ? '#42a5f5' : '#ffa726'}; position: static; margin: 0;"></div>
+              <span style="color: rgba(255,255,255,0.9);">${task.taskStatus.replace('_', ' ')}</span>
+            </div>
           </div>
-        </div>
+          
+          <div>
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              <i class="fas fa-flag"></i> New Status
+            </label>
+            <select id="newStatusSelect" class="form-select" required>
+              <option value="PENDING" ${task.taskStatus === 'PENDING' ? 'selected' : ''}>Pending</option>
+              <option value="ASSIGNED" ${task.taskStatus === 'ASSIGNED' ? 'selected' : ''}>Assigned</option>
+              <option value="IN_PROGRESS" ${task.taskStatus === 'IN_PROGRESS' ? 'selected' : ''}>In Progress</option>
+              <option value="TRANSFER" ${task.taskStatus === 'TRANSFER' ? 'selected' : ''}>Transfer</option>
+              <option value="COMPLETE" ${task.taskStatus === 'COMPLETE' ? 'selected' : ''}>Complete</option>
+            </select>
+          </div>
+          
+          <div>
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              <i class="fas fa-percentage"></i> Progress (%)
+            </label>
+            <input type="range" id="progressSlider" min="0" max="100" value="${task.progress}" 
+                   style="width: 100%; margin-bottom: 0.5rem;"
+                   oninput="document.getElementById('progressValue').innerText = this.value + '%'">
+            <div style="text-align: center; color: rgba(255,255,255,0.7);">
+              <span id="progressValue">${task.progress}%</span>
+            </div>
+          </div>
+          
+          <div>
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              <i class="fas fa-comment"></i> Status Update Comment (Optional)
+            </label>
+            <textarea id="statusComment" class="form-control" rows="3" placeholder="Add notes about the status change..."></textarea>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button type="submit" class="glass-button">
+              <i class="fas fa-save"></i> Update Status
+            </button>
+            <button type="button" class="btn-outline-secondary" onclick="closeTaskModal()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
       `;
-      pg.appendChild(card);
-    }
-    function submitDemoComment(taskId) {
-      let t = DUMMY_TASKS.find(tsk=>tsk.taskId===taskId);
-      let val = document.getElementById('commentInputBox').value;
-      if(val && t){
-        t.comments = t.comments||[];
-        t.comments.push({by:'Admin User',role:'CREATOR',content:val});
-        alert('Comment added (demo)');
-        routeTo('dashboard');
-      }
+      
+      modal.classList.add('active');
+      
+      document.getElementById('updateStatusForm').onsubmit = function(e) {
+        e.preventDefault();
+        const newStatus = document.getElementById('newStatusSelect').value;
+        const newProgress = parseInt(document.getElementById('progressSlider').value);
+        const comment = document.getElementById('statusComment').value.trim();
+        
+        // Update task
+        task.taskStatus = newStatus;
+        task.progress = newProgress;
+        
+        if (newStatus === 'COMPLETE') {
+          task.completedAt = new Date();
+          task.progress = 100;
+        }
+        
+        // Add status update comment
+        if (comment) {
+          task.comments = task.comments || [];
+          task.comments.push({
+            id: Date.now(),
+            by: currentUser?.name || 'Admin User',
+            role: 'CREATOR',
+            content: `Status updated to ${newStatus.replace('_', ' ')}: ${comment}`,
+            createdAt: new Date()
+          });
+        }
+        
+        showNotification(`Task status updated to ${newStatus.replace('_', ' ')}`, 'success');
+        closeTaskModal();
+        renderDashboard();
+        updateStats();
+      };
     }
 
-    // ===== DEPARTMENT =====
-    function renderDepartment(){
-      let d = (document.getElementById('deptInput').value||'').trim();
-      let holder = document.getElementById('deptTasks'), error = document.getElementById('deptError'), nores=document.getElementById('deptNoResults');
-      holder.innerHTML=''; error.style.display='none'; nores.innerHTML='';
-      if(!d) {
-        error.innerHTML = 'Department is required'; error.style.display='';
+    // ===== ENHANCED ADD COMMENT =====
+    function showAddComment(task) {
+      const modal = document.getElementById('taskDetailModal');
+      const titleEl = document.getElementById('modalTaskTitle');
+      const contentEl = document.getElementById('taskDetailContent');
+      
+      titleEl.innerText = `Add Comment: ${task.taskTitle}`;
+      
+      contentEl.innerHTML = `
+        <form id="addCommentForm" style="display: grid; gap: 1.5rem;">
+          <div>
+            <h6 style="color: #667eea; margin-bottom: 0.5rem;">Task Information</h6>
+            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+              <p style="color: rgba(255,255,255,0.9); margin: 0 0 0.5rem 0;"><strong>Title:</strong> ${task.taskTitle}</p>
+              <p style="color: rgba(255,255,255,0.7); margin: 0;"><strong>Current Status:</strong> ${task.taskStatus.replace('_', ' ')}</p>
+            </div>
+          </div>
+          
+          <div>
+            <label style="color: rgba(255,255,255,0.9); font-weight: 500; display: block; margin-bottom: 0.5rem;">
+              <i class="fas fa-comment-dots"></i> Your Comment
+            </label>
+            <textarea id="newComment" class="form-control" rows="4" required 
+                      placeholder="Enter your comment, feedback, or updates..."></textarea>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button type="submit" class="glass-button">
+              <i class="fas fa-paper-plane"></i> Add Comment
+            </button>
+            <button type="button" class="btn-outline-secondary" onclick="closeTaskModal()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      `;
+      
+      modal.classList.add('active');
+      
+      // Focus on textarea
+      setTimeout(() => document.getElementById('newComment').focus(), 100);
+      
+      document.getElementById('addCommentForm').onsubmit = function(e) {
+        e.preventDefault();
+        const commentContent = document.getElementById('newComment').value.trim();
+        
+        if (commentContent) {
+          task.comments = task.comments || [];
+          task.comments.push({
+            id: Date.now(),
+            by: currentUser?.name || 'Admin User',
+            role: 'CREATOR',
+            content: commentContent,
+            createdAt: new Date()
+          });
+          
+          showNotification('Comment added successfully', 'success');
+          closeTaskModal();
+          renderDashboard();
+        }
+      };
+    }
+
+    // ===== DEPARTMENT MANAGEMENT =====
+    function renderDepartment() {
+      const deptInput = document.getElementById('deptInput')?.value.trim() || '';
+      const deptTasks = document.getElementById('deptTasks');
+      const deptError = document.getElementById('deptError');
+      const deptNoResults = document.getElementById('deptNoResults');
+      
+      if (!deptInput) {
+        deptError.style.display = 'block';
+        deptError.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter a department name to search.';
+        deptTasks.innerHTML = '';
+        deptNoResults.innerHTML = '';
         return;
       }
-      let matches = DUMMY_TASKS.filter(t => t.department && t.department.toLowerCase().includes(d.toLowerCase()));
-      if(matches.length===0) {
-        nores.innerHTML='No tasks found. Enter another department and click Search.';
+      
+      deptError.style.display = 'none';
+      
+      const matchingTasks = DUMMY_TASKS.filter(task => 
+        task.department && task.department.toLowerCase().includes(deptInput.toLowerCase())
+      );
+      
+      deptTasks.innerHTML = '';
+      deptNoResults.innerHTML = '';
+      
+      if (matchingTasks.length === 0) {
+        deptNoResults.innerHTML = `
+          <div style="text-align: center; padding: 2rem;">
+            <i class="fas fa-search" style="font-size: 3rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+            <h6 style="color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">No tasks found</h6>
+            <p style="color: rgba(255,255,255,0.5); margin: 0;">No tasks found for department "${deptInput}". Try searching for: Design, Backend, Frontend, QA, DevOps, or Marketing.</p>
+          </div>
+        `;
       } else {
-        matches.forEach(task=>{
-          let card = document.createElement('div');
-          card.className = 'glass-card h-100';
-          card.style.marginBottom='1.3rem';
+        matchingTasks.forEach(task => {
+          const card = renderTaskCard(task, true);
+          card.classList.add('fade-in');
+          deptTasks.appendChild(card);
+        });
+      }
+    }
+
+    // ===== HISTORY MANAGEMENT =====
+    function renderHistory() {
+      const historyTasks = document.getElementById('historyTasks');
+      historyTasks.innerHTML = '';
+      
+      const historicalTasks = DUMMY_TASKS.filter(task => 
+        task.previouslyAssignedToName || task.taskStatus === 'COMPLETE' || task.completedAt
+      );
+      
+      if (historicalTasks.length === 0) {
+        historyTasks.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+            <i class="fas fa-history" style="font-size: 4rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+            <h5 style="color: rgba(255,255,255,0.7); margin-bottom: 1rem;">No Historical Tasks</h5>
+            <p style="color: rgba(255,255,255,0.5);">Completed and reassigned tasks will appear here.</p>
+          </div>
+        `;
+      } else {
+        historicalTasks.forEach(task => {
+          const card = document.createElement('div');
+          card.className = 'glass-card fade-in';
+          card.style.cursor = 'pointer';
+          card.onclick = () => showTaskDetails(task);
+          
+          const assignedUser = DUMMY_USERS.find(u => u.id === task.assignedToId);
+          const previousUser = DUMMY_USERS.find(u => u.id === task.previouslyAssignedToId);
+          
           card.innerHTML = `
-            <h5 class="text-primary">${task.taskTitle}</h5>
-            <div>${task.taskDescription}</div>
-            <div><b>Status:</b> ${task.taskStatus}</div>
-            <div><b>Assigned On:</b> ${task.assignedOn.toLocaleDateString()}</div>
-            <div><b>Completed At:</b> ${task.completedAt? task.completedAt.toLocaleDateString():'—'}</div>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <div class="urgency-dot" style="background: ${task.taskStatus === 'COMPLETE' ? '#4caf50' : '#ab47bc'}; position: static; margin: 0;"></div>
+              <h5 style="margin: 0; color: #ffffff; flex: 1;">${task.taskTitle}</h5>
+              <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                ${task.taskStatus.replace('_', ' ')}
+              </span>
+            </div>
+            
+            <p style="color: rgba(255,255,255,0.8); margin-bottom: 1rem; line-height: 1.4;">
+              ${task.taskDescription}
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <h6 style="color: #667eea; margin-bottom: 0.5rem;">Currently Assigned</h6>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  ${assignedUser ? `<img src="${assignedUser.avatar}" style="width: 24px; height: 24px; border-radius: 50%;">` : ''}
+                  <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">${task.assignedToName}</span>
+                </div>
+              </div>
+              
+              ${task.previouslyAssignedToName ? `
+                <div>
+                  <h6 style="color: #667eea; margin-bottom: 0.5rem;">Previously Assigned</h6>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    ${previousUser ? `<img src="${previousUser.avatar}" style="width: 24px; height: 24px; border-radius: 50%;">` : ''}
+                    <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">${task.previouslyAssignedToName}</span>
+                  </div>
+                </div>
+              ` : ''}
+              
+              <div>
+                <h6 style="color: #667eea; margin-bottom: 0.5rem;">Created On</h6>
+                <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">${task.taskCreatedOn.toLocaleDateString()}</span>
+              </div>
+              
+              ${task.completedAt ? `
+                <div>
+                  <h6 style="color: #667eea; margin-bottom: 0.5rem;">Completed On</h6>
+                  <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">${task.completedAt.toLocaleDateString()}</span>
+                </div>
+              ` : ''}
+            </div>
+            
             <div class="progress-bar">
-              <div class="progress-bar-inner" style="width:${task.progress||30}%"></div>
+              <div class="progress-bar-inner" style="width: ${task.progress}%;"></div>
             </div>
           `;
-          holder.appendChild(card);
+          
+          historyTasks.appendChild(card);
         });
       }
     }
 
-    // ===== HISTORY =====
-    function renderHistory(){
-      let holder = document.getElementById('historyTasks');
-      holder.innerHTML='';
-      let matches = DUMMY_TASKS.filter(t=>t.previouslyAssignedToName && t.previouslyAssignedToName!=='');
-      if(matches.length===0){
-        let d = document.createElement('div');
-        d.className = 'alert alert-warning text-center mt-4';
-        d.innerText = "No previously assigned tasks found.";
-        holder.appendChild(d);
+    // ===== REPORTS AND ANALYTICS =====
+    function renderReports() {
+      // This would integrate with a charting library in a real application
+      showNotification('Reports feature loaded', 'success', 2000);
+    }
+
+    function generateReport() {
+      // Simulate report generation
+      showNotification('Report generation started...', 'success', 2000);
+      setTimeout(() => {
+        showNotification('Report exported successfully!', 'success');
+      }, 3000);
+    }
+
+    // ===== UTILITY FUNCTIONS =====
+    function clearFilters() {
+      document.getElementById('searchTaskInput').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('departmentFilter').value = '';
+      renderDashboard();
+      showNotification('Filters cleared', 'success', 2000);
+    }
+
+    function refreshTasks() {
+      renderDashboard();
+      updateStats();
+      showNotification('Tasks refreshed', 'success', 2000);
+    }
+
+    // ===== BACKGROUND ROTATION =====
+    function rotateBackground() {
+      currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+      const bgEl = document.getElementById('bg');
+      bgEl.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+    }
+
+    // ===== ENHANCED KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+          case 'n':
+            e.preventDefault();
+            routeTo('create');
+            break;
+          case 'k':
+            e.preventDefault();
+            routeTo('kanban');
+            break;
+          case 'd':
+            e.preventDefault();
+            routeTo('dashboard');
+            break;
+          case '/':
+            e.preventDefault();
+            const searchInput = document.getElementById('searchTaskInput');
+            if (searchInput) searchInput.focus();
+            break;
+        }
+      }
+      
+      if (e.key === 'Escape') {
+        const modal = document.querySelector('.modal-overlay.active');
+        if (modal) {
+          modal.classList.remove('active');
+        }
+        const profileOverlay = document.getElementById('profileOverlay');
+        if (profileOverlay.classList.contains('active')) {
+          toggleProfileCard();
+        }
+      }
+    });
+
+    // ===== RESPONSIVE MOBILE MENU =====
+    function setupMobileMenu() {
+      const navbar = document.getElementById('app-navbar');
+      if (window.innerWidth <= 768) {
+        navbar.style.flexDirection = 'column';
+        navbar.style.gap = '1rem';
       } else {
-        matches.forEach(task=>{
-          let card = document.createElement('div');
-          card.className='glass-card h-100';
-          card.style.marginBottom='1.2rem';
-          card.innerHTML=`
-            <h5 class="fw-semibold text-primary">${task.taskTitle}</h5>
-            <div>${task.taskDescription}</div>
-            <div><b>Status:</b> ${task.taskStatus}</div>
-            <div><b>Assigned From:</b> ${task.assignedFromName}</div>
-            <div><b>Assigned On:</b> ${task.assignedOn.toLocaleDateString()}</div>
-            <div><b>Created On:</b> ${task.taskCreatedOn.toLocaleDateString()}</div>
-          `;
-          holder.appendChild(card);
-        });
+        navbar.style.flexDirection = 'row';
+        navbar.style.gap = 'initial';
       }
     }
 
-    // ===== BACKGROUND ROTATION EFFECT =====
-    let demoBgImgs = [
-      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80'
-    ];
-    let demoBgIndex = 0;
-    setInterval(() => {
-      demoBgIndex=(demoBgIndex+1)%demoBgImgs.length;
-      document.getElementById('bg').style.backgroundImage="url('"+demoBgImgs[demoBgIndex]+"')";
-    }, 4500);
+    // ===== INITIALIZATION =====
+    function init() {
+      // Start with login page
+      showPage('login');
+      
+      // Setup background rotation
+      setInterval(rotateBackground, 6000);
+      
+      // Setup responsive handling
+      window.addEventListener('resize', setupMobileMenu);
+      setupMobileMenu();
+      
+      // Setup click outside modal to close
+      document.addEventListener('click', function(e) {
+        const modal = document.getElementById('taskDetailModal');
+        if (e.target === modal) {
+          closeTaskModal();
+        }
+      });
+      
+      console.log('Enhanced Task Management Demo Initialized');
+      console.log('Keyboard Shortcuts:');
+      console.log('- Ctrl/Cmd + N: New Task');
+      console.log('- Ctrl/Cmd + K: Kanban Board');
+      console.log('- Ctrl/Cmd + D: Dashboard');
+      console.log('- Ctrl/Cmd + /: Focus Search');
+      console.log('- Escape: Close Modals/Overlays');
+    }
 
-    // Enable dashboard on load for demo
-    // showPage('dashboard'); // start at login
+    // Start the application
+    init();
+
+    // ===== DEMO DATA SIMULATION =====
+    // Simulate real-time updates
+    setInterval(() => {
+      // Randomly update task progress for demo
+      const inProgressTasks = DUMMY_TASKS.filter(t => t.taskStatus === 'IN_PROGRESS');
+      if (inProgressTasks.length > 0) {
+        const randomTask = inProgressTasks[Math.floor(Math.random() * inProgressTasks.length)];
+        if (randomTask.progress < 95) {
+          randomTask.progress = Math.min(100, randomTask.progress + Math.floor(Math.random() * 5));
+          
+          // Update UI if on dashboard
+          const currentPage = document.querySelector('.page[style*="display: block"]');
+          if (currentPage && currentPage.id === 'page-dashboard') {
+            renderDashboard();
+          }
+        }
+      }
+    }, 15000); // Update every 15 seconds
+
+    // Simulate new comments occasionally
+    setInterval(() => {
+      if (Math.random() > 0.7) { // 30% chance
+        const activeTasks = DUMMY_TASKS.filter(t => t.taskStatus !== 'COMPLETE');
+        if (activeTasks.length > 0) {
+          const randomTask = activeTasks[Math.floor(Math.random() * activeTasks.length)];
+          const assignedUser = DUMMY_USERS.find(u => u.id === randomTask.assignedToId);
+          
+          if (assignedUser) {
+            randomTask.comments = randomTask.comments || [];
+            randomTask.comments.push({
+              id: Date.now(),
+              by: assignedUser.name,
+              role: 'ASSIGNED_TO',
+              content: 'Progress update: Working on this task, making good progress!',
+              createdAt: new Date()
+            });
+          }
+        }
+      }
+    }, 30000); // Check every 30 seconds
   </script>
 </body>
 </html>
+        
