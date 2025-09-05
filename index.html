@@ -23,10 +23,15 @@
     }
     .background-wrapper {
       position: fixed;
-      inset: 0;
-      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
-      transition: background-image 1s;
-      z-index: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 1s ease-in-out;
     }
     .background-wrapper::after {
       content: '';
@@ -279,6 +284,7 @@
       background: linear-gradient(to right,#3ba368,#99bf3d 97%);
       color: #fff;
       box-shadow: 0 0 9px #a5d64511;
+      padding: 0px;
     }
     .btn-outline-secondary {
       background: none;
@@ -336,6 +342,8 @@
 </head>
 <body>
   <div class="background-wrapper" id="bg"></div>
+
+
   <div class="content-overlay">
     <!-- NAVBAR -->
     <nav id="app-navbar" class="glass-navbar" style="display: none">
@@ -496,6 +504,27 @@
     </div>
   </div>
   <script>
+// Background images array
+        const backgrounds = [
+            'assets/images/Task_Management_Background1.jpg',
+            'assets/images/Task_Management_Background2.jpg',
+            'assets/images/Task_Management_Background3.jpg',
+            'assets/images/Task_Management_Background4.jpg'
+        ];
+
+        let current = 0;
+        const bgWrapper = document.querySelector('.background-wrapper');
+
+        // Function to change background
+        function changeBackground() {
+            bgWrapper.style.backgroundImage = `url('${backgrounds[current]}')`;
+            current = (current + 1) % backgrounds.length;
+        }
+
+        // Initial call + interval
+        changeBackground();
+        setInterval(changeBackground, 5000);
+
     // ========= DEMO DATA =========
     let DUMMY_USERS = [
       {id:1, name:'Alice Johnson', username:'alice', userRoles:'EMPLOYEE', avatar:'https://i.pravatar.cc/100?img=14'},
